@@ -67,7 +67,7 @@ class Engine
 	}
 
 	/**
-	 * Finds whether all corpora in a pool are exhaused
+	 * Finds whether all corpora in a pool are exhausted
 	 *
 	 * @param	array		$corpusPool		An array of Corpus objects
 	 *
