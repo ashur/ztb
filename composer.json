@@ -1,0 +1,30 @@
+{
+    "name": "ashur/zoostheboss",
+    "type": "project",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/cranberry/filesystem"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/cranberry/shell"
+        }
+    ],
+    "authors": [
+        {
+            "name": "Ashur Cabrera",
+            "email": "hello@cabreramade.co"
+        }
+    ],
+    "require": {
+        "cranberry/shell": "dev-develop",
+        "cranberry/filesystem": "dev-develop",
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "ZTB\\": "src/"
+        }
+    }
+}
