@@ -38,15 +38,15 @@ class Corpus
 	 *
 	 * @param	Cranberry\Filesystem\File	$file
 	 *
-	 * @param	string	$domain
+	 * @param	string						$domain		Defaults to corpus name
 	 *
 	 * @throws	InvalidArgumentException	If file contents cannot be decoded
 	 *
-	 * @throws	DomainException	If specified domain not found in data
+	 * @throws	DomainException				If specified domain not found in data
 	 *
 	 * @return	ZTB\Corpus
 	 */
-	static public function createFromJSONEncodedFile( File $file, string $domain ) : self
+	static public function createFromJSONEncodedFile( File $file, string $domain=null ) : self
 	{
 		$data = json_decode( $file->getContents(), true );
 		if( json_last_error() != JSON_ERROR_NONE )
@@ -54,12 +54,15 @@ class Corpus
 			throw new \InvalidArgumentException( "Could not decode '{$file}': " . json_last_error_msg(), json_last_error() );
 		}
 
+		$corpusName = $file->getBasename( '.json' );
+		$domain = $domain == null ? $corpusName : $domain;
+
 		if( !array_key_exists( $domain, $data ) )
 		{
 			throw new \DomainException( "Domain '{$domain}' not found in '{$file}'" );
 		}
 
-		return new self( $data[$domain] );
+		return new self( $corpusName, $data[$domain] );
 	}
 
 	/**
