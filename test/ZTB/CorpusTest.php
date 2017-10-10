@@ -64,15 +64,25 @@ class CorpusTest extends TestCase
 	public function test_getAllItems()
 	{
 		$items = ['aioli', 'ajvar', 'amba'];
-		$corpus = new Corpus( $items );
+		$corpusName = 'name-' . microtime( true );
+		$corpus = new Corpus( $corpusName, $items );
 
 		$this->assertEquals( $items, $corpus->getAllItems() );
+	}
+
+	public function test_getName()
+	{
+		$corpusName = 'name-' . microtime( true );
+		$corpus = new Corpus( $corpusName, [] );
+
+		$this->assertEquals( $corpusName, $corpus->getName() );
 	}
 
 	public function test_getRandomItem()
 	{
 		$items = ['aioli', 'ajvar', 'amba'];
-		$corpus = new Corpus( $items );
+		$corpusName = 'name-' . microtime( true );
+		$corpus = new Corpus( $corpusName, $items );
 
 		$this->assertTrue( in_array( $corpus->getRandomItem(), $items ) );
 	}

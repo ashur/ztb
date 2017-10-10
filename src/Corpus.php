@@ -15,14 +15,20 @@ class Corpus
 	protected $items=[];
 
 	/**
+	 * @var	string
+	 */
+	protected $name;
+
+	/**
 	 * @param	string	$name
 	 *
 	 * @param	array	$items
 	 *
 	 * @return	void
 	 */
-	public function __construct( array $items )
+	public function __construct( string $name, array $items )
 	{
+		$this->name = $name;
 		$this->items = $items;
 	}
 
@@ -64,6 +70,16 @@ class Corpus
 	public function getAllItems() : array
 	{
 		return $this->items;
+	}
+
+	/**
+	 * Returns corpus name
+	 *
+	 * @return	string
+	 */
+	public function getName() : string
+	{
+		return $this->name;
 	}
 
 	/**
