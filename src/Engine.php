@@ -85,6 +85,8 @@ class Engine
 		$randomCorpus = self::getRandomCorpusFromPool( $corpusPool, $history );
 		$randomValue = self::getRandomValueFromCorpus( $randomCorpus, $history );
 
+		$history->addDomainItem( $randomCorpus->getName(), $randomValue );
+
 		return $randomValue;
 	}
 

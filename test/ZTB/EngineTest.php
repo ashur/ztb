@@ -87,6 +87,7 @@ class EngineTest extends TestCase
 			'fruits' => ['blueberry'],
 		];
 		$history = new History( $historyData );
+		$this->assertFalse( $history->hasDomainItem( 'fruits', 'apple' ) );
 
 		$corpusPool[] = new Corpus( 'colors', ['green','red','blue'] );
 		$corpusPool[] = new Corpus( 'condiments', ['aioli','mayonnaise'] );
@@ -94,6 +95,7 @@ class EngineTest extends TestCase
 
 		$randomValue = Engine::getRandomValueFromCorpusPool( $corpusPool, $history );
 		$this->assertEquals( 'apple', $randomValue );
+		$this->assertTrue( $history->hasDomainItem( 'fruits', 'apple' ) );
 	}
 
 	public function provider_isCorpusExhausted() : array
