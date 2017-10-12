@@ -8,6 +8,39 @@ namespace ZTB;
 class Engine
 {
 	/**
+	 * Returns a random, inexhausted Corpus object from the given pool.
+	 *
+	 * If all Corpus objects are exhausted, reset their domains in the given
+	 * History object and try again.
+	 *
+	 * @param	array		$corpusPool		An array of Corpus objects
+	 *
+	 * @param	ZTB\History	&$history		Passed by reference
+	 *
+	 * @return	ZTB\Corpus
+	 */
+	public function getRandomCorpusFromPool( array $corpusPool, History &$history ) : Corpus
+	{
+		shuffle( $corpusPool );
+		foreach( $corpusPool as $corpus )
+		{
+			if( !$this->isCorpusExhausted( $corpus, $history ) )
+			{
+				return $corpus;
+			}
+		}
+
+		/* All Corpus objects are exhausted, so we'll reset all relevant domains
+		   in the given History object */
+		foreach( $corpusPool as $corpus )
+		{
+			$history->removeDomain( $corpus->getName() );
+		}
+
+		return $this->getRandomCorpusFromPool( $corpusPool, $history );
+	}
+
+	/**
 	 * Finds whether all items in a corpus appear in the history
 	 *
 	 * @param	ZTB\Corpus	$corpus
