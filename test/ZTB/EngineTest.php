@@ -9,6 +9,86 @@ use PHPUnit\Framework\TestCase;
 
 class EngineTest extends TestCase
 {
+	public function test_getCorpus()
+	{
+		$corpusItems = ['aioli', 'ajvar', 'amba'];
+		$corpusData = [
+			'description'	=> 'A list of condiments',
+			'condiments'	=> $corpusItems
+		];
+		$json = json_encode( $corpusData );
+
+		/* Create stubs */
+		$corporaDirectoryStub = $this->createMock( \Cranberry\Filesystem\Directory::class );
+		$categoryDirectoryStub = $this->createMock( \Cranberry\Filesystem\Directory::class );
+		$corpusFileStub = $this->createMock( \Cranberry\Filesystem\File::class );
+
+		/* Wire up method return values */
+		$corpusFileStub
+			->method( 'exists' )
+			->willReturn( true );
+		$corpusFileStub
+			->method( 'getContents' )
+			->willReturn( $json );
+		$corpusFileStub
+			->method( 'getBasename' )
+			->willReturn( 'condiments' );	// This stub method is simulating
+											// SplFileInfo::getBasename('.json')
+
+		$categoryDirectoryStub
+			->method( 'getChild' )
+			->willReturn( $corpusFileStub );
+
+		$corporaDirectoryStub
+			->method( 'getChild' )
+			->willReturn( $categoryDirectoryStub );
+
+		$history = new History();
+		$engine = new Engine( $history, $corporaDirectoryStub );
+		$corpus = $engine->getCorpus( 'foods', 'condiments' );
+
+		$this->assertEquals( $corpusItems, $corpus->getAllItems() );
+	}
+
+	/**
+	 * @expectedException	InvalidArgumentException
+	 */
+	public function test_getCorpus_UsingNonExistentCorpusFileThrowsException()
+	{
+		/* Create stubs */
+		$corporaDirectoryStub = $this
+			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$categoryDirectoryStub = $this
+			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$corpusFileStub = $this
+			->getMockBuilder( \Cranberry\Filesystem\File::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		/* Wire up method return values */
+		$corpusFileStub
+			->method( 'exists' )
+			->willReturn( false );
+
+		$categoryDirectoryStub
+			->method( 'getChild' )
+			->willReturn( $corpusFileStub );
+
+		$corporaDirectoryStub
+			->method( 'getChild' )
+			->willReturn( $categoryDirectoryStub );
+
+		$history = new History();
+		$engine = new Engine( $history, $corporaDirectoryStub );
+		$engine->getCorpus( 'foo', 'bar' );
+	}
+
 	public function test_getRandomCorpusFromPool_ReturnsNonExhaustedCorpus()
 	{
 		$historyData = 	[
@@ -232,6 +312,7 @@ class EngineTest extends TestCase
 			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
 			->disableOriginalConstructor()
 			->getMock();
+
 		$engine = new Engine( $history, $corporaDirectoryStub );
 
 		$corpus = new Corpus( 'condiments', ['mayonnaise'] );

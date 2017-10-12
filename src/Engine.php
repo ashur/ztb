@@ -38,6 +38,32 @@ class Engine
 	}
 
 	/**
+	 * Returns Corpus object instantiated from JSON-encoded data file
+	 *
+	 * @param	string	$category
+	 *
+	 * @param	string	$corpus
+	 *
+	 * @throws	InvalidArgumentException	If source file not found
+	 *
+	 * @return	ZTB\Corpus
+	 */
+	public function getCorpus( string $category, string $corpus ) : Corpus
+	{
+		$corpusFile = $this->corporaDirectory
+			->getChild( $category, Filesystem\Node::DIRECTORY )
+			->getChild( "{$corpus}.json", Filesystem\Node::FILE );
+
+		if( !$corpusFile->exists() )
+		{
+			throw new \InvalidArgumentException( "Corpus file not found: '{$corpusFile}'" );
+		}
+
+		$corpus = Corpus::createFromJSONEncodedFile( $corpusFile );
+		return $corpus;
+	}
+
+	/**
 	 * Returns a random, inexhausted Corpus object from the given pool.
 	 *
 	 * If all Corpus objects are exhausted, reset their domains in the given
