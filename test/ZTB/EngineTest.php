@@ -208,4 +208,15 @@ class EngineTest extends TestCase
 
 		$this->assertEquals( $isCorpusPoolExhausted, Engine::isCorpusPoolExhausted( $corpusPool, $history ) );
 	}
+
+	public function test_registerFirstNameCorpus()
+	{
+		$history = new History();
+		$engine = new Engine( $history );
+
+		$corpus = new Corpus( 'fruits', ['blueberry'] );
+		$engine->registerFirstNameCorpus( $corpus );
+
+		$this->assertEquals( 'blueberry', $engine->getRandomFirstName() );
+	}
 }

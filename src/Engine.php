@@ -8,6 +8,26 @@ namespace ZTB;
 class Engine
 {
 	/**
+	 * @var	array
+	 */
+	protected $firstNameCorpusPool=[];
+
+	/**
+	 * @var	ZTB\History
+	 */
+	protected $history;
+
+	/**
+	 * @param	ZTB\History	$history
+	 *
+	 * @return	void
+	 */
+	public function __construct( History $history )
+	{
+		$this->history = $history;
+	}
+
+	/**
 	 * Returns a random, inexhausted Corpus object from the given pool.
 	 *
 	 * If all Corpus objects are exhausted, reset their domains in the given
@@ -43,6 +63,16 @@ class Engine
 		}
 
 		return self::getRandomCorpusFromPool( $corpusPool, $history );
+	}
+
+	/**
+	 * Returns random value from first-name Corpus pool
+	 *
+	 * @return	string
+	 */
+	public function getRandomFirstName() : string
+	{
+		return $this->getRandomValueFromCorpusPool( $this->firstNameCorpusPool, $this->history );
 	}
 
 	/**
@@ -145,5 +175,17 @@ class Engine
 		}
 
 		return $poolIsExhausted;
+	}
+
+	/**
+	 * Register given Corpus in first-name pool
+	 *
+	 * @param	ZTB\Corpus	$corpus
+	 *
+	 * @return	void
+	 */
+	public function registerFirstNameCorpus( Corpus $corpus )
+	{
+		$this->firstNameCorpusPool[] = $corpus;
 	}
 }
