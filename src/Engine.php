@@ -72,6 +72,23 @@ class Engine
     }
 
 	/**
+	 * Returns a random string from the given Corpus pool.
+	 *
+	 * @param	array		$corpusPool		An array of Corpus objects
+	 *
+	 * @param	ZTB\History	$history
+	 *
+	 * @return	string
+	 */
+	public function getRandomValueFromCorpusPool( array $corpusPool, History $history ) : string
+	{
+		$randomCorpus = $this->getRandomCorpusFromPool( $corpusPool, $history );
+		$randomValue = $this->getRandomValueFromCorpus( $randomCorpus, $history );
+
+		return $randomValue;
+	}
+
+	/**
 	 * Finds whether all items in a corpus appear in the history
 	 *
 	 * @param	ZTB\Corpus	$corpus

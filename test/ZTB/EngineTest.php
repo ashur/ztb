@@ -87,6 +87,25 @@ class EngineTest extends TestCase
 		$this->assertTrue( in_array( $randomValue, ['raisin','apple','blueberry'] ) );
 	}
 
+	public function test_getRandomValueFromCorpusPool()
+	{
+		$engine = new Engine();
+
+		$historyData = 	[
+			'colors' => ['red','blue','green'],
+			'condiments' => ['mayonnaise', 'aioli'],
+			'fruits' => ['blueberry'],
+		];
+		$history = new History( $historyData );
+
+		$corpusPool[] = new Corpus( 'colors', ['green','red','blue'] );
+		$corpusPool[] = new Corpus( 'condiments', ['aioli','mayonnaise'] );
+		$corpusPool[] = new Corpus( 'fruits', ['apple','blueberry'] );
+
+		$randomValue = $engine->getRandomValueFromCorpusPool( $corpusPool, $history );
+		$this->assertEquals( 'apple', $randomValue );
+	}
+
 	public function provider_isCorpusExhausted() : array
 	{
 		return
