@@ -19,12 +19,12 @@ class Engine
 	 *
 	 * @return	ZTB\Corpus
 	 */
-	public function getRandomCorpusFromPool( array $corpusPool, History &$history ) : Corpus
+	static public function getRandomCorpusFromPool( array $corpusPool, History &$history ) : Corpus
 	{
 		shuffle( $corpusPool );
 		foreach( $corpusPool as $corpus )
 		{
-			if( !$this->isCorpusExhausted( $corpus, $history ) )
+			if( !self::isCorpusExhausted( $corpus, $history ) )
 			{
 				return $corpus;
 			}
@@ -37,7 +37,7 @@ class Engine
 			$history->removeDomain( $corpus->getName() );
 		}
 
-		return $this->getRandomCorpusFromPool( $corpusPool, $history );
+		return self::getRandomCorpusFromPool( $corpusPool, $history );
 	}
 
 	/**
@@ -49,7 +49,7 @@ class Engine
      *
      * @return    string
      */
-    public function getRandomValueFromCorpus( Corpus $corpus, History &$history ) : string
+    static public function getRandomValueFromCorpus( Corpus $corpus, History &$history ) : string
     {
 		$corpusName = $corpus->getName();
 
@@ -68,7 +68,7 @@ class Engine
 		   given History object */
 		$history->removeDomain( $corpusName );
 
-		return $this->getRandomValueFromCorpus( $corpus, $history );
+		return self::getRandomValueFromCorpus( $corpus, $history );
     }
 
 	/**
@@ -80,10 +80,10 @@ class Engine
 	 *
 	 * @return	string
 	 */
-	public function getRandomValueFromCorpusPool( array $corpusPool, History $history ) : string
+	static public function getRandomValueFromCorpusPool( array $corpusPool, History $history ) : string
 	{
-		$randomCorpus = $this->getRandomCorpusFromPool( $corpusPool, $history );
-		$randomValue = $this->getRandomValueFromCorpus( $randomCorpus, $history );
+		$randomCorpus = self::getRandomCorpusFromPool( $corpusPool, $history );
+		$randomValue = self::getRandomValueFromCorpus( $randomCorpus, $history );
 
 		return $randomValue;
 	}
@@ -97,7 +97,7 @@ class Engine
 	 *
 	 * @return	bool
 	 */
-	public function isCorpusExhausted( Corpus $corpus, History $history ) : bool
+	static public function isCorpusExhausted( Corpus $corpus, History $history ) : bool
 	{
 		$corpusItems = $corpus->getAllItems();
 		$corpusName = $corpus->getName();
@@ -123,13 +123,13 @@ class Engine
 	 *
 	 * @return	bool
 	 */
-	public function isCorpusPoolExhausted( array $corpusPool, History $history ) : bool
+	static public function isCorpusPoolExhausted( array $corpusPool, History $history ) : bool
 	{
 		$poolIsExhausted = true;
 
 		foreach( $corpusPool as $corpus )
 		{
-			$poolIsExhausted = $poolIsExhausted && $this->isCorpusExhausted( $corpus, $history );
+			$poolIsExhausted = $poolIsExhausted && self::isCorpusExhausted( $corpus, $history );
 		}
 
 		return $poolIsExhausted;

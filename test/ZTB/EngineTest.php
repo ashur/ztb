@@ -11,8 +11,6 @@ class EngineTest extends TestCase
 {
 	public function test_getRandomCorpusFromPool_ReturnsNonExhaustedCorpus()
 	{
-		$engine = new Engine();
-
 		$historyData = 	[
 			'colors' => ['red','blue','green'],
 			'condiments' => ['mayonnaise', 'aioli'],
@@ -28,13 +26,11 @@ class EngineTest extends TestCase
 
 		shuffle( $corpusPool );
 
-		$this->assertEquals( $expectedCorpus, $engine->getRandomCorpusFromPool( $corpusPool, $history ) );
+		$this->assertEquals( $expectedCorpus, Engine::getRandomCorpusFromPool( $corpusPool, $history ) );
 	}
 
 	public function test_getRandomCorpusFromPool_RemovesAllCorpusDomainsFromHistoryWhenPoolIsExhausted()
 	{
-		$engine = new Engine();
-
 		$historyData = 	[
 			'colors' => ['red','blue','green'],
 			'condiments' => ['mayonnaise', 'aioli'],
@@ -48,7 +44,7 @@ class EngineTest extends TestCase
 
 		shuffle( $corpusPool );
 
-		$randomCorpus = $engine->getRandomCorpusFromPool( $corpusPool, $history );
+		$randomCorpus = Engine::getRandomCorpusFromPool( $corpusPool, $history );
 		$randomCorpusName = $randomCorpus->getName();
 
 		$this->assertTrue( in_array( $randomCorpus, $corpusPool ) );
@@ -61,27 +57,23 @@ class EngineTest extends TestCase
 
 	public function test_getRandomValueFromCorpus_ReturnsValueNotInHistory()
 	{
-		$engine = new Engine();
-
 		$historyData = [ 'fruits' => ['apple','raisin'] ];
 		$history = new History( $historyData );
 
 		$corpus = new Corpus( 'fruits', ['apple','blueberry','raisin'] );
 
-		$randomValue = $engine->getRandomValueFromCorpus( $corpus, $history );
+		$randomValue = Engine::getRandomValueFromCorpus( $corpus, $history );
 		$this->assertEquals( 'blueberry', $randomValue );
 	}
 
 	public function test_getRandomValueFromCorpus_RemovesDomainFromHistoryWhenCorpusIsExhausted()
 	{
-		$engine = new Engine();
-
 		$historyData = [ 'fruits' => ['blueberry','apple','raisin'] ];
 		$history = new History( $historyData );
 
 		$corpus = new Corpus( 'fruits', ['apple','blueberry','raisin'] );
 
-		$randomValue = $engine->getRandomValueFromCorpus( $corpus, $history );
+		$randomValue = Engine::getRandomValueFromCorpus( $corpus, $history );
 
 		$this->assertFalse( $history->hasDomain( 'fruits' ) );
 		$this->assertTrue( in_array( $randomValue, ['raisin','apple','blueberry'] ) );
@@ -89,8 +81,6 @@ class EngineTest extends TestCase
 
 	public function test_getRandomValueFromCorpusPool()
 	{
-		$engine = new Engine();
-
 		$historyData = 	[
 			'colors' => ['red','blue','green'],
 			'condiments' => ['mayonnaise', 'aioli'],
@@ -102,7 +92,7 @@ class EngineTest extends TestCase
 		$corpusPool[] = new Corpus( 'condiments', ['aioli','mayonnaise'] );
 		$corpusPool[] = new Corpus( 'fruits', ['apple','blueberry'] );
 
-		$randomValue = $engine->getRandomValueFromCorpusPool( $corpusPool, $history );
+		$randomValue = Engine::getRandomValueFromCorpusPool( $corpusPool, $history );
 		$this->assertEquals( 'apple', $randomValue );
 	}
 
@@ -135,14 +125,12 @@ class EngineTest extends TestCase
 	 */
 	public function test_isCorpusExhausted_returnsBool( array $historyData, bool $isCorpusExhausted )
 	{
-		$engine = new Engine();
-
 		$history = new History( $historyData );
 
 		$corpusItems = ['aioli','mayonnaise'];
 		$corpus = new Corpus( 'condiments', $corpusItems );
 
-		$this->assertEquals( $isCorpusExhausted, $engine->isCorpusExhausted( $corpus, $history ) );
+		$this->assertEquals( $isCorpusExhausted, Engine::isCorpusExhausted( $corpus, $history ) );
 	}
 
 	public function provider_isCorpusPoolExhausted() : array
@@ -189,13 +177,11 @@ class EngineTest extends TestCase
 	 */
 	public function test_isCorpusPoolExhausted_returnsBool( array $historyData, bool $isCorpusPoolExhausted )
 	{
-		$engine = new Engine();
-
 		$history = new History( $historyData );
 
 		$corpusPool[] = new Corpus( 'condiments', ['aioli','mayonnaise'] );
 		$corpusPool[] = new Corpus( 'fruits', ['blueberry','raisin'] );
 
-		$this->assertEquals( $isCorpusPoolExhausted, $engine->isCorpusPoolExhausted( $corpusPool, $history ) );
+		$this->assertEquals( $isCorpusPoolExhausted, Engine::isCorpusPoolExhausted( $corpusPool, $history ) );
 	}
 }
