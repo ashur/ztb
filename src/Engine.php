@@ -18,6 +18,11 @@ class Engine
 	protected $history;
 
 	/**
+	 * @var	array
+	 */
+	protected $lastNameCorpusPool=[];
+
+	/**
 	 * @param	ZTB\History	$history
 	 *
 	 * @return	void
@@ -73,6 +78,16 @@ class Engine
 	public function getRandomFirstName() : string
 	{
 		return $this->getRandomValueFromCorpusPool( $this->firstNameCorpusPool, $this->history );
+	}
+
+	/**
+	 * Returns random value from last-name Corpus pool
+	 *
+	 * @return	string
+	 */
+	public function getRandomLastName() : string
+	{
+		return $this->getRandomValueFromCorpusPool( $this->lastNameCorpusPool, $this->history );
 	}
 
 	/**
@@ -187,5 +202,17 @@ class Engine
 	public function registerFirstNameCorpus( Corpus $corpus )
 	{
 		$this->firstNameCorpusPool[] = $corpus;
+	}
+
+	/**
+	 * Register given Corpus in last-name pool
+	 *
+	 * @param	ZTB\Corpus	$corpus
+	 *
+	 * @return	void
+	 */
+	public function registerLastNameCorpus( Corpus $corpus )
+	{
+		$this->lastNameCorpusPool[] = $corpus;
 	}
 }

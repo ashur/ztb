@@ -219,4 +219,15 @@ class EngineTest extends TestCase
 
 		$this->assertEquals( 'blueberry', $engine->getRandomFirstName() );
 	}
+
+	public function test_registerLastNameCorpus()
+	{
+		$history = new History();
+		$engine = new Engine( $history );
+
+		$corpus = new Corpus( 'condiments', ['mayonnaise'] );
+		$engine->registerLastNameCorpus( $corpus );
+
+		$this->assertEquals( 'mayonnaise', $engine->getRandomLastName() );
+	}
 }
