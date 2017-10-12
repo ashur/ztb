@@ -9,12 +9,24 @@ use PHPUnit\Framework\TestCase;
 
 class EngineTest extends TestCase
 {
-	public function test_getCorpus()
+	public function provider_getCorpus() : array
+	{
+		return [
+			['condiments', null],
+			['condiments', 'condiments'],
+			['toppings', 'toppings'],
+		];
+	}
+
+	/**
+	 * @dataProvider	provider_getCorpus
+	 */
+	public function test_getCorpus( $domainName, $domainParam )
 	{
 		$corpusItems = ['aioli', 'ajvar', 'amba'];
 		$corpusData = [
 			'description'	=> 'A list of condiments',
-			'condiments'	=> $corpusItems
+			$domainName	=> $corpusItems
 		];
 		$json = json_encode( $corpusData );
 
@@ -45,7 +57,7 @@ class EngineTest extends TestCase
 
 		$history = new History();
 		$engine = new Engine( $history, $corporaDirectoryStub );
-		$corpus = $engine->getCorpus( 'foods', 'condiments' );
+		$corpus = $engine->getCorpus( 'foods', 'condiments', $domainParam );
 
 		$this->assertEquals( $corpusItems, $corpus->getAllItems() );
 	}

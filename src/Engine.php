@@ -44,11 +44,13 @@ class Engine
 	 *
 	 * @param	string	$corpus
 	 *
+	 * @param	string	$domain
+	 *
 	 * @throws	InvalidArgumentException	If source file not found
 	 *
 	 * @return	ZTB\Corpus
 	 */
-	public function getCorpus( string $category, string $corpus ) : Corpus
+	public function getCorpus( string $category, string $corpus, string $domain=null ) : Corpus
 	{
 		$corpusFile = $this->corporaDirectory
 			->getChild( $category, Filesystem\Node::DIRECTORY )
@@ -59,7 +61,7 @@ class Engine
 			throw new \InvalidArgumentException( "Corpus file not found: '{$corpusFile}'" );
 		}
 
-		$corpus = Corpus::createFromJSONEncodedFile( $corpusFile );
+		$corpus = Corpus::createFromJSONEncodedFile( $corpusFile, $domain );
 		return $corpus;
 	}
 
