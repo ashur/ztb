@@ -41,6 +41,37 @@ class Engine
 	}
 
 	/**
+     * Returns a random value from the given Corpus object which is not present
+     * in the associated History domain.
+     *
+     * If all Corpus values are exhausted, reset the domain in the given History
+     * object and try again
+     *
+     * @return    string
+     */
+    public function getRandomValueFromCorpus( Corpus $corpus, History &$history ) : string
+    {
+		$corpusName = $corpus->getName();
+
+		$corpusValues = $corpus->getAllItems();
+		shuffle( $corpusValues );
+
+		foreach( $corpusValues as $corpusValue )
+		{
+			if( !$history->hasDomainItem( $corpusName, $corpusValue ) )
+			{
+				return $corpusValue;
+			}
+		}
+
+		/* All values are exhausted, so we'll reset the relevant domain in the
+		   given History object */
+		$history->removeDomain( $corpusName );
+
+		return $this->getRandomValueFromCorpus( $corpus, $history );
+    }
+
+	/**
 	 * Finds whether all items in a corpus appear in the history
 	 *
 	 * @param	ZTB\Corpus	$corpus

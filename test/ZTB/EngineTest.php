@@ -59,6 +59,34 @@ class EngineTest extends TestCase
 		}
 	}
 
+	public function test_getRandomValueFromCorpus_ReturnsValueNotInHistory()
+	{
+		$engine = new Engine();
+
+		$historyData = [ 'fruits' => ['apple','raisin'] ];
+		$history = new History( $historyData );
+
+		$corpus = new Corpus( 'fruits', ['apple','blueberry','raisin'] );
+
+		$randomValue = $engine->getRandomValueFromCorpus( $corpus, $history );
+		$this->assertEquals( 'blueberry', $randomValue );
+	}
+
+	public function test_getRandomValueFromCorpus_RemovesDomainFromHistoryWhenCorpusIsExhausted()
+	{
+		$engine = new Engine();
+
+		$historyData = [ 'fruits' => ['blueberry','apple','raisin'] ];
+		$history = new History( $historyData );
+
+		$corpus = new Corpus( 'fruits', ['apple','blueberry','raisin'] );
+
+		$randomValue = $engine->getRandomValueFromCorpus( $corpus, $history );
+
+		$this->assertFalse( $history->hasDomain( 'fruits' ) );
+		$this->assertTrue( in_array( $randomValue, ['raisin','apple','blueberry'] ) );
+	}
+
 	public function provider_isCorpusExhausted() : array
 	{
 		return
