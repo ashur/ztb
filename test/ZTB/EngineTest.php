@@ -79,6 +79,17 @@ class EngineTest extends TestCase
 		$this->assertTrue( in_array( $randomValue, ['raisin','apple','blueberry'] ) );
 	}
 
+	/**
+	 * @expectedException	UnderflowException
+	 */
+	public function test_getRandomValueFromCorpus_WithEmptyCorpusThrowsException()
+	{
+		$history = new History();
+		$corpus = new Corpus( 'corpus', [] );
+
+		$randomValue = Engine::getRandomValueFromCorpus( $corpus, $history );
+	}
+
 	public function test_getRandomValueFromCorpusPool()
 	{
 		$historyData = 	[
@@ -96,6 +107,17 @@ class EngineTest extends TestCase
 		$randomValue = Engine::getRandomValueFromCorpusPool( $corpusPool, $history );
 		$this->assertEquals( 'apple', $randomValue );
 		$this->assertTrue( $history->hasDomainItem( 'fruits', 'apple' ) );
+	}
+
+	/**
+	 * @expectedException	UnderflowException
+	 */
+	public function test_getRandomCorpusFromPool_WithEmptyPoolThrowsException()
+	{
+		$history = new History();
+		$corpusPool = [];
+
+		$randomValue = Engine::getRandomCorpusFromPool( $corpusPool, $history );
 	}
 
 	public function provider_isCorpusExhausted() : array

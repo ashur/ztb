@@ -21,6 +21,11 @@ class Engine
 	 */
 	static public function getRandomCorpusFromPool( array $corpusPool, History &$history ) : Corpus
 	{
+		if( count( $corpusPool ) == 0 )
+		{
+			throw new \UnderflowException( 'Corpus pool is empty' );
+		}
+
 		shuffle( $corpusPool );
 		foreach( $corpusPool as $corpus )
 		{
@@ -52,8 +57,13 @@ class Engine
     static public function getRandomValueFromCorpus( Corpus $corpus, History &$history ) : string
     {
 		$corpusName = $corpus->getName();
-
 		$corpusValues = $corpus->getAllItems();
+
+		if( count( $corpusValues ) == 0 )
+		{
+			throw new \UnderflowException( 'Corpus is empty' );
+		}
+
 		shuffle( $corpusValues );
 
 		foreach( $corpusValues as $corpusValue )
