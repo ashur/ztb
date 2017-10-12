@@ -212,7 +212,12 @@ class EngineTest extends TestCase
 	public function test_registerFirstNameCorpus()
 	{
 		$history = new History();
-		$engine = new Engine( $history );
+		$corporaDirectoryStub = $this
+			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$engine = new Engine( $history, $corporaDirectoryStub );
 
 		$corpus = new Corpus( 'fruits', ['blueberry'] );
 		$engine->registerFirstNameCorpus( $corpus );
@@ -223,7 +228,11 @@ class EngineTest extends TestCase
 	public function test_registerLastNameCorpus()
 	{
 		$history = new History();
-		$engine = new Engine( $history );
+		$corporaDirectoryStub = $this
+			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
+			->disableOriginalConstructor()
+			->getMock();
+		$engine = new Engine( $history, $corporaDirectoryStub );
 
 		$corpus = new Corpus( 'condiments', ['mayonnaise'] );
 		$engine->registerLastNameCorpus( $corpus );

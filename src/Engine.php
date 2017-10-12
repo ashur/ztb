@@ -5,6 +5,8 @@
  */
 namespace ZTB;
 
+use Cranberry\Filesystem;
+
 class Engine
 {
 	/**
@@ -25,11 +27,14 @@ class Engine
 	/**
 	 * @param	ZTB\History	$history
 	 *
+	 * @param	Cranberry\Filesystem\Directory	$corporaDirectory
+	 *
 	 * @return	void
 	 */
-	public function __construct( History $history )
+	public function __construct( History $history, Filesystem\Directory $corporaDirectory )
 	{
 		$this->history = $history;
+		$this->corporaDirectory = $corporaDirectory;
 	}
 
 	/**
