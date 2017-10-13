@@ -9,6 +9,44 @@ use PHPUnit\Framework\TestCase;
 
 class EngineTest extends TestCase
 {
+	public function provider____filterMultipleHyphens() : array
+	{
+		return [
+			['Cinderford', true],
+			['Electro-Mechanical', true],
+			['Bradford-On-Avon', false],
+			['Chapel-En-Le-Frith', false],
+		];
+	}
+
+	/**
+	 * @dataProvider	provider____filterMultipleHyphens
+	 */
+	public function test____filterMultipleHyphens( $string, $expectedResult )
+	{
+		$actualResult = Engine::___filterMultipleHyphens( $string );
+		$this->assertEquals( $expectedResult, $actualResult );
+	}
+
+	public function provider____filterSpaces() : array
+	{
+		return [
+			['Cinderford', true],
+			['Electro-Mechanical', true],
+			['Lotus Flower', false],
+			['The Worshipful The Mayor', false],
+		];
+	}
+
+	/**
+	 * @dataProvider	provider____filterSpaces
+	 */
+	public function test____filterSpaces( $string, $expectedResult )
+	{
+		$actualResult = Engine::___filterSpaces( $string );
+		$this->assertEquals( $expectedResult, $actualResult );
+	}
+
 	public function provider_getCorpus() : array
 	{
 		return [
@@ -317,6 +355,27 @@ class EngineTest extends TestCase
 		$this->assertEquals( 'blueberry', $engine->getRandomFirstName() );
 	}
 
+	public function test_registerFirstNameFilter()
+	{
+		$history = new History();
+		$corporaDirectoryStub = $this
+			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$engine = new Engine( $history, $corporaDirectoryStub );
+		$corpus = new Corpus( 'hyphen', ['Cinderford','Bradford-On-Avon'] );
+
+		$engine->registerFirstNameCorpus( $corpus );
+		$engine->registerFirstNameFilter( [$engine, '___filterMultipleHyphens'] );
+
+		/* Test multiple times to make sure we're not just randomly succeeding */
+		for( $i=1; $i<5; $i++ )
+		{
+			$this->assertEquals( 'Cinderford', $engine->getRandomFirstName() );
+		}
+	}
+
 	public function test_registerLastNameCorpus()
 	{
 		$history = new History();
@@ -331,5 +390,26 @@ class EngineTest extends TestCase
 		$engine->registerLastNameCorpus( $corpus );
 
 		$this->assertEquals( 'mayonnaise', $engine->getRandomLastName() );
+	}
+
+	public function test_registerLastNameFilter()
+	{
+		$history = new History();
+		$corporaDirectoryStub = $this
+			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$engine = new Engine( $history, $corporaDirectoryStub );
+		$corpus = new Corpus( 'hyphen', ['Cinderford','Bradford-On-Avon'] );
+
+		$engine->registerLastNameCorpus( $corpus );
+		$engine->registerLastNameFilter( [$engine, '___filterMultipleHyphens'] );
+
+		/* Test multiple times to make sure we're not just randomly succeeding */
+		for( $i=1; $i<5; $i++ )
+		{
+			$this->assertEquals( 'Cinderford', $engine->getRandomLastName() );
+		}
 	}
 }

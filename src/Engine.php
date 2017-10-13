@@ -15,6 +15,11 @@ class Engine
 	protected $firstNameCorpusPool=[];
 
 	/**
+	 * @var	array
+	 */
+	protected $firstNameFilters=[];
+
+	/**
 	 * @var	ZTB\History
 	 */
 	protected $history;
@@ -23,6 +28,11 @@ class Engine
 	 * @var	array
 	 */
 	protected $lastNameCorpusPool=[];
+
+	/**
+	 * @var	array
+	 */
+	protected $lastNameFilters=[];
 
 	/**
 	 * @param	ZTB\History	$history
@@ -35,6 +45,30 @@ class Engine
 	{
 		$this->history = $history;
 		$this->corporaDirectory = $corporaDirectory;
+	}
+
+	/**
+	 * Returns whether a given string contains one or zero hyphens
+	 *
+	 * @param	string	$string
+	 *
+	 * @return	bool
+	 */
+	static public function ___filterMultipleHyphens( string $string ) : bool
+	{
+		return substr_count( $string, '-' ) <= 1;
+	}
+
+	/**
+	 * Returns whether a given string contains any space characters
+	 *
+	 * @param	string	$string
+	 *
+	 * @return	bool
+	 */
+	static public function ___filterSpaces( string $string ) : bool
+	{
+		return substr_count( $string, ' ' ) < 1;
 	}
 
 	/**
@@ -110,7 +144,22 @@ class Engine
 	 */
 	public function getRandomFirstName() : string
 	{
-		return $this->getRandomValueFromCorpusPool( $this->firstNameCorpusPool, $this->history );
+		$filters = $this->firstNameFilters;
+
+		do
+		{
+			$didPassAllFilters = true;
+			$firstName = $this->getRandomValueFromCorpusPool( $this->firstNameCorpusPool, $this->history );
+
+			foreach( $filters as $filter )
+			{
+				$didPassFilter = call_user_func( $filter, $firstName );
+				$didPassAllFilters = $didPassAllFilters && $didPassFilter;
+			}
+		}
+		while( $didPassAllFilters == false );
+
+		return $firstName;
 	}
 
 	/**
@@ -120,7 +169,22 @@ class Engine
 	 */
 	public function getRandomLastName() : string
 	{
-		return $this->getRandomValueFromCorpusPool( $this->lastNameCorpusPool, $this->history );
+		$filters = $this->lastNameFilters;
+
+		do
+		{
+			$didPassAllFilters = true;
+			$lastName = $this->getRandomValueFromCorpusPool( $this->lastNameCorpusPool, $this->history );
+
+			foreach( $filters as $filter )
+			{
+				$didPassFilter = call_user_func( $filter, $lastName );
+				$didPassAllFilters = $didPassAllFilters && $didPassFilter;
+			}
+		}
+		while( $didPassAllFilters == false );
+
+		return $lastName;
 	}
 
 	/**
@@ -238,6 +302,18 @@ class Engine
 	}
 
 	/**
+	 * Pushes a filter onto the end of the first name filter queue
+	 *
+	 * @param	Callable	$filter
+	 *
+	 * @return	void
+	 */
+	public function registerFirstNameFilter( Callable $filter )
+	{
+		$this->firstNameFilters[] = $filter;
+	}
+
+	/**
 	 * Register given Corpus in last-name pool
 	 *
 	 * @param	ZTB\Corpus	$corpus
@@ -247,5 +323,17 @@ class Engine
 	public function registerLastNameCorpus( Corpus $corpus )
 	{
 		$this->lastNameCorpusPool[] = $corpus;
+	}
+
+	/**
+	 * Pushes a filter onto the end of the last name filter queue
+	 *
+	 * @param	Callable	$filter
+	 *
+	 * @return	void
+	 */
+	public function registerLastNameFilter( Callable $filter )
+	{
+		$this->lastNameFilters[] = $filter;
 	}
 }
