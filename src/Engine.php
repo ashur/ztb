@@ -27,6 +27,16 @@ class Engine
 	/**
 	 * @var	array
 	 */
+	protected $honorificsCorpusPool=[];
+
+	/**
+	 * @var	array
+	 */
+	protected $honorificsFilters=[];
+
+	/**
+	 * @var	array
+	 */
 	protected $lastNameCorpusPool=[];
 
 	/**
@@ -160,6 +170,31 @@ class Engine
 		while( $didPassAllFilters == false );
 
 		return $firstName;
+	}
+
+	/**
+	 * Returns random value from honorific Corpus pool
+	 *
+	 * @return	string
+	 */
+	public function getRandomHonorific() : string
+	{
+		$filters = $this->honorificsFilters;
+
+		do
+		{
+			$didPassAllFilters = true;
+			$honorific = $this->getRandomValueFromCorpusPool( $this->honorificsCorpusPool, $this->history );
+
+			foreach( $filters as $filter )
+			{
+				$didPassFilter = call_user_func( $filter, $honorific );
+				$didPassAllFilters = $didPassAllFilters && $didPassFilter;
+			}
+		}
+		while( $didPassAllFilters == false );
+
+		return $honorific;
 	}
 
 	/**
@@ -311,6 +346,30 @@ class Engine
 	public function registerFirstNameFilter( Callable $filter )
 	{
 		$this->firstNameFilters[] = $filter;
+	}
+
+	/**
+	 * Register given Corpus in honorifics pool
+	 *
+	 * @param	ZTB\Corpus	$corpus
+	 *
+	 * @return	void
+	 */
+	public function registerHonorificsCorpus( Corpus $corpus )
+	{
+		$this->honorificsCorpusPool[] = $corpus;
+	}
+
+	/**
+	 * Pushes a filter onto the end of the honorifics filter queue
+	 *
+	 * @param	Callable	$filter
+	 *
+	 * @return	void
+	 */
+	public function registerHonorificsFilter( Callable $filter )
+	{
+		$this->honorificsFilters[] = $filter;
 	}
 
 	/**

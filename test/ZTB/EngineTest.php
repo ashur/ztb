@@ -376,6 +376,43 @@ class EngineTest extends TestCase
 		}
 	}
 
+	public function test_registerHonorificsCorpus()
+	{
+		$history = new History();
+		$corporaDirectoryStub = $this
+			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$engine = new Engine( $history, $corporaDirectoryStub );
+
+		$corpus = new Corpus( 'honorifics', ['Admiral'] );
+		$engine->registerHonorificsCorpus( $corpus );
+
+		$this->assertEquals( 'Admiral', $engine->getRandomHonorific() );
+	}
+
+	public function test_registerHonorificsFilter()
+	{
+		$history = new History();
+		$corporaDirectoryStub = $this
+			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$engine = new Engine( $history, $corporaDirectoryStub );
+		$corpus = new Corpus( 'hyphen', ['Dr.','Vice Chancellor'] );
+
+		$engine->registerHonorificsCorpus( $corpus );
+		$engine->registerHonorificsFilter( [$engine, '___filterSpaces'] );
+
+		/* Test multiple times to make sure we're not just randomly succeeding */
+		for( $i=1; $i<5; $i++ )
+		{
+			$this->assertEquals( 'Dr.', $engine->getRandomHonorific() );
+		}
+	}
+
 	public function test_registerLastNameCorpus()
 	{
 		$history = new History();
