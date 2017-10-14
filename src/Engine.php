@@ -109,7 +109,17 @@ class Engine
 	static public function ___filterUnwantedWords( string $string, array $unwantedWords ) : bool
 	{
 		$string = strtolower( $string );
-		return !in_array( $string, $unwantedWords );
+		foreach( $unwantedWords as $unwantedWord )
+		{
+			$pattern = sprintf( '/%s/', $unwantedWord );
+			$result = preg_match( $pattern, $string );
+
+			if( $result == 1 )
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

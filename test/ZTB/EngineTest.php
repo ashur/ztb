@@ -59,6 +59,7 @@ class EngineTest extends TestCase
 			['Pepsi', ['pepsi','snoopy'], false],
 			['Snoopy', ['pepsi','snoopy'], false],
 			['Max', ['pepsi','snoopy'], true],
+			['gaming change person', ['pepsi','snoopy','\s?person'], false],
 		];
 	}
 
