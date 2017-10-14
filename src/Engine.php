@@ -98,6 +98,21 @@ class Engine
 	}
 
 	/**
+	 * Returns whether a given string appears in a given array of unwanted words
+	 *
+	 * @param	string	$string
+	 *
+	 * @param	array	$unwantedWords
+	 *
+	 * @return	bool
+	 */
+	static public function ___filterUnwantedWords( string $string, array $unwantedWords ) : bool
+	{
+		$string = strtolower( $string );
+		return !in_array( $string, $unwantedWords );
+	}
+
+	/**
 	 * Returns Corpus object instantiated from JSON-encoded data file
 	 *
 	 * @param	string	$category

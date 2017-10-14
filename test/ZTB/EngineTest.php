@@ -53,6 +53,24 @@ class EngineTest extends TestCase
 		$this->assertEquals( $expectedResult, $actualResult );
 	}
 
+	public function provider____filterUnwantedWords() : array
+	{
+		return [
+			['Pepsi', ['pepsi','snoopy'], false],
+			['Snoopy', ['pepsi','snoopy'], false],
+			['Max', ['pepsi','snoopy'], true],
+		];
+	}
+
+	/**
+	 * @dataProvider	provider____filterUnwantedWords
+	 */
+	public function test____filterUnwantedWords( string $string, array $unwantedWords, bool $expectedResult )
+	{
+		$actualResult = Engine::___filterUnwantedWords( $string, $unwantedWords );
+		$this->assertEquals( $expectedResult, $actualResult );
+	}
+
 	public function provider_getCorpus() : array
 	{
 		return [
