@@ -45,6 +45,11 @@ class Engine
 	protected $lastNameFilters=[];
 
 	/**
+	 * @var	ZTB\Corpus
+	 */
+	protected $nameCorpus;
+
+	/**
 	 * @param	ZTB\History	$history
 	 *
 	 * @param	Cranberry\Filesystem\Directory	$corporaDirectory
@@ -55,6 +60,8 @@ class Engine
 	{
 		$this->history = $history;
 		$this->corporaDirectory = $corporaDirectory;
+
+		$this->namePatternCorpus = new Corpus( 'name_pattern', ['%F %L', '%F', '%H %F'] );
 	}
 
 	/**
@@ -107,6 +114,38 @@ class Engine
 
 		$corpus = Corpus::createFromJSONEncodedFile( $corpusFile, $domain );
 		return $corpus;
+	}
+
+	/**
+	 * Returns a performer name
+	 *
+	 * @return	string
+	 */
+	public function getPerformerName() : string
+	{
+		$namePattern = $this->getRandomValueFromCorpus( $this->namePatternCorpus, $this->history );
+		$this->history->addDomainItem( $this->namePatternCorpus->getName(), $namePattern );
+
+		/* First Name */
+		if( substr_count( $namePattern, '%F' ) )
+		{
+			$firstName = $this->getRandomFirstName();
+			$namePattern = str_replace( '%F', $firstName, $namePattern );
+		}
+		/* Last Name */
+		if( substr_count( $namePattern, '%L' ) )
+		{
+			$lastName = $this->getRandomLastName();
+			$namePattern = str_replace( '%L', $lastName, $namePattern );
+		}
+		/* Honorific */
+		if( substr_count( $namePattern, '%H' ) )
+		{
+			$honorific = $this->getRandomHonorific();
+			$namePattern = str_replace( '%H', $honorific, $namePattern );
+		}
+
+		return $namePattern;
 	}
 
 	/**

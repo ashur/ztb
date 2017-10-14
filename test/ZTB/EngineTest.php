@@ -139,6 +139,36 @@ class EngineTest extends TestCase
 		$engine->getCorpus( 'foo', 'bar' );
 	}
 
+	public function test_getPerformerName()
+	{
+		$history = new History();
+		$corporaDirectoryStub = $this
+			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$engine = new Engine( $history, $corporaDirectoryStub );
+
+		$engine->registerFirstNameCorpus( new Corpus( 'fruits', ['blueberry'] ) );
+		$engine->registerHonorificsCorpus( new Corpus( 'honorifics', ['Admiral'] ) );
+		$engine->registerLastNameCorpus( new Corpus( 'cities', ['Avondale'] ) );
+
+		$this->assertFalse( $history->hasDomain( 'name_pattern' ) );
+
+		$nameCandidates[] = 'Blueberry Avondale';
+		$nameCandidates[] = 'Blueberry';
+		$nameCandidates[] = 'Admiral Blueberry';
+
+		/* Test multiple times to make sure we're not just randomly succeeding */
+		for( $i=1; $i<=5; $i++ )
+		{
+			$performerName = ucwords( $engine->getPerformerName() );
+			$this->assertTrue( in_array( $performerName, $nameCandidates ) );
+		}
+
+		$this->assertTrue( $history->hasDomain( 'name_pattern' ) );
+	}
+
 	public function test_getRandomCorpusFromPool_ReturnsNonExhaustedCorpus()
 	{
 		$historyData = 	[
