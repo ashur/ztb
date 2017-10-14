@@ -61,7 +61,7 @@ class Engine
 		$this->history = $history;
 		$this->corporaDirectory = $corporaDirectory;
 
-		$this->namePatternCorpus = new Corpus( 'name_pattern', ['%F %L', '%F', '%H %F'] );
+		$this->namePatternCorpus = new Corpus( 'name_pattern', ['%F %L', '%F'] );
 	}
 
 	/**
