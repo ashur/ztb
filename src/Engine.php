@@ -83,11 +83,13 @@ class Engine
 	 *
 	 * @param	string	$string
 	 *
+	 * @param	int	$maxCount
+	 *
 	 * @return	bool
 	 */
-	static public function ___filterSpaces( string $string ) : bool
+	static public function ___filterSpaces( string $string, int $maxCount ) : bool
 	{
-		return substr_count( $string, ' ' ) < 1;
+		return substr_count( $string, ' ' ) <= $maxCount;
 	}
 
 	/**

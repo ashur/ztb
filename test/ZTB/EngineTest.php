@@ -35,19 +35,21 @@ class EngineTest extends TestCase
 	public function provider____filterSpaces() : array
 	{
 		return [
-			['Cinderford', true],
-			['Electro-Mechanical', true],
-			['Lotus Flower', false],
-			['The Worshipful The Mayor', false],
+			['Cinderford', 0, true],
+			['Cinderford', 1, true],
+			['Lotus Flower', 0, false],
+			['Lotus Flower', 1, true],
+			['The Worshipful The Mayor', 2, false],
+			['The Worshipful The Mayor', 3, true],
 		];
 	}
 
 	/**
 	 * @dataProvider	provider____filterSpaces
 	 */
-	public function test____filterSpaces( $string, $expectedResult )
+	public function test____filterSpaces( string $string, int $maxCount, $expectedResult )
 	{
-		$actualResult = Engine::___filterSpaces( $string );
+		$actualResult = Engine::___filterSpaces( $string, $maxCount );
 		$this->assertEquals( $expectedResult, $actualResult );
 	}
 
