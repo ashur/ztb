@@ -211,87 +211,65 @@ class Engine
 	}
 
 	/**
-	 * Returns random value from first-name Corpus pool
+	 * Returns random value from given Corpus pool which passes given filters
+	 *
+	 * @param	array	$filterQueue
+	 *
+	 * @param	array	$corpusPool
+	 *
+	 * @return	string
+	 */
+	protected function getRandomFilteredStringFromCorpusPool( array $filterQueue, array $corpusPool ) : string
+	{
+		$filters = array_merge( $this->globalFilters, $filterQueue );
+
+		do
+		{
+			$didPassAllFilters = true;
+			$string = $this->getRandomValueFromCorpusPool( $corpusPool, $this->history );
+
+			foreach( $filters as $filter )
+			{
+				$filterParams = $filter['params'];
+				array_unshift( $filterParams, $string );
+
+				$didPassFilter = call_user_func_array( $filter['callback'], $filterParams );
+				$didPassAllFilters = $didPassAllFilters && $didPassFilter;
+			}
+		}
+		while( $didPassAllFilters == false );
+
+		return $string;
+	}
+
+	/**
+	 * Returns random, filtered value from first-name Corpus pool
 	 *
 	 * @return	string
 	 */
 	public function getRandomFirstName() : string
 	{
-		$filters = array_merge( $this->globalFilters, $this->firstNameFilters );
-
-		do
-		{
-			$didPassAllFilters = true;
-			$firstName = $this->getRandomValueFromCorpusPool( $this->firstNameCorpusPool, $this->history );
-
-			foreach( $filters as $filter )
-			{
-				$filterParams = $filter['params'];
-				array_unshift( $filterParams, $firstName );
-
-				$didPassFilter = call_user_func_array( $filter['callback'], $filterParams );
-				$didPassAllFilters = $didPassAllFilters && $didPassFilter;
-			}
-		}
-		while( $didPassAllFilters == false );
-
-		return $firstName;
+		return $this->getRandomFilteredStringFromCorpusPool( $this->firstNameFilters, $this->firstNameCorpusPool );
 	}
 
 	/**
-	 * Returns random value from honorific Corpus pool
+	 * Returns random, filtered value from honorific Corpus pool
 	 *
 	 * @return	string
 	 */
 	public function getRandomHonorific() : string
 	{
-		$filters = array_merge( $this->globalFilters, $this->honorificsFilters );
-
-		do
-		{
-			$didPassAllFilters = true;
-			$honorific = $this->getRandomValueFromCorpusPool( $this->honorificsCorpusPool, $this->history );
-
-			foreach( $filters as $filter )
-			{
-				$filterParams = $filter['params'];
-				array_unshift( $filterParams, $honorific );
-
-				$didPassFilter = call_user_func_array( $filter['callback'], $filterParams );
-				$didPassAllFilters = $didPassAllFilters && $didPassFilter;
-			}
-		}
-		while( $didPassAllFilters == false );
-
-		return $honorific;
+		return $this->getRandomFilteredStringFromCorpusPool( $this->honorificsFilters, $this->honorificsCorpusPool );
 	}
 
 	/**
-	 * Returns random value from last-name Corpus pool
+	 * Returns random, filtered value from last-name Corpus pool
 	 *
 	 * @return	string
 	 */
 	public function getRandomLastName() : string
 	{
-		$filters = array_merge( $this->globalFilters, $this->lastNameFilters );
-
-		do
-		{
-			$didPassAllFilters = true;
-			$lastName = $this->getRandomValueFromCorpusPool( $this->lastNameCorpusPool, $this->history );
-
-			foreach( $filters as $filter )
-			{
-				$filterParams = $filter['params'];
-				array_unshift( $filterParams, $lastName );
-
-				$didPassFilter = call_user_func_array( $filter['callback'], $filterParams );
-				$didPassAllFilters = $didPassAllFilters && $didPassFilter;
-			}
-		}
-		while( $didPassAllFilters == false );
-
-		return $lastName;
+		return $this->getRandomFilteredStringFromCorpusPool( $this->lastNameFilters, $this->lastNameCorpusPool );
 	}
 
 	/**
