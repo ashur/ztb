@@ -20,6 +20,11 @@ class Engine
 	protected $firstNameFilters=[];
 
 	/**
+	 * @var	array
+	 */
+	protected $globalFilters=[];
+
+	/**
 	 * @var	ZTB\History
 	 */
 	protected $history;
@@ -197,7 +202,7 @@ class Engine
 	 */
 	public function getRandomFirstName() : string
 	{
-		$filters = $this->firstNameFilters;
+		$filters = array_merge( $this->globalFilters, $this->firstNameFilters );
 
 		do
 		{
@@ -225,7 +230,7 @@ class Engine
 	 */
 	public function getRandomHonorific() : string
 	{
-		$filters = $this->honorificsFilters;
+		$filters = array_merge( $this->globalFilters, $this->honorificsFilters );
 
 		do
 		{
@@ -253,7 +258,7 @@ class Engine
 	 */
 	public function getRandomLastName() : string
 	{
-		$filters = $this->lastNameFilters;
+		$filters = array_merge( $this->globalFilters, $this->lastNameFilters );
 
 		do
 		{
@@ -403,6 +408,23 @@ class Engine
 		$filter['params'] = $filterParams;
 
 		$this->firstNameFilters[] = $filter;
+	}
+
+	/**
+	 * Pushes a filter onto the end of the global filter queue
+	 *
+	 * @param	Callable	$filterCallback
+	 *
+	 * @param	array	$filterParams
+	 *
+	 * @return	void
+	 */
+	public function registerGlobalFilter( Callable $filterCallback, array $filterParams=[] )
+	{
+		$filter['callback'] = $filterCallback;
+		$filter['params'] = $filterParams;
+
+		$this->globalFilters[] = $filter;
 	}
 
 	/**
