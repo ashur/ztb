@@ -65,15 +65,17 @@ class Engine
 	}
 
 	/**
-	 * Returns whether a given string contains one or zero hyphens
+	 * Returns whether a given string contains an acceptable number of hyphens
 	 *
 	 * @param	string	$string
 	 *
+	 * @param	int	$maxCount
+	 *
 	 * @return	bool
 	 */
-	static public function ___filterMultipleHyphens( string $string ) : bool
+	static public function ___filterHyphens( string $string, int $maxCount ) : bool
 	{
-		return substr_count( $string, '-' ) <= 1;
+		return substr_count( $string, '-' ) <= $maxCount;
 	}
 
 	/**
@@ -202,7 +204,10 @@ class Engine
 
 			foreach( $filters as $filter )
 			{
-				$didPassFilter = call_user_func( $filter, $firstName );
+				$filterParams = $filter['params'];
+				array_unshift( $filterParams, $firstName );
+
+				$didPassFilter = call_user_func_array( $filter['callback'], $filterParams );
 				$didPassAllFilters = $didPassAllFilters && $didPassFilter;
 			}
 		}
@@ -227,7 +232,10 @@ class Engine
 
 			foreach( $filters as $filter )
 			{
-				$didPassFilter = call_user_func( $filter, $honorific );
+				$filterParams = $filter['params'];
+				array_unshift( $filterParams, $honorific );
+
+				$didPassFilter = call_user_func_array( $filter['callback'], $filterParams );
 				$didPassAllFilters = $didPassAllFilters && $didPassFilter;
 			}
 		}
@@ -252,7 +260,10 @@ class Engine
 
 			foreach( $filters as $filter )
 			{
-				$didPassFilter = call_user_func( $filter, $lastName );
+				$filterParams = $filter['params'];
+				array_unshift( $filterParams, $lastName );
+
+				$didPassFilter = call_user_func_array( $filter['callback'], $filterParams );
 				$didPassAllFilters = $didPassAllFilters && $didPassFilter;
 			}
 		}
@@ -378,12 +389,17 @@ class Engine
 	/**
 	 * Pushes a filter onto the end of the first name filter queue
 	 *
-	 * @param	Callable	$filter
+	 * @param	Callable	$filterCallback
+	 *
+	 * @param	array	$filterParams
 	 *
 	 * @return	void
 	 */
-	public function registerFirstNameFilter( Callable $filter )
+	public function registerFirstNameFilter( Callable $filterCallback, array $filterParams=[] )
 	{
+		$filter['callback'] = $filterCallback;
+		$filter['params'] = $filterParams;
+
 		$this->firstNameFilters[] = $filter;
 	}
 
@@ -402,12 +418,17 @@ class Engine
 	/**
 	 * Pushes a filter onto the end of the honorifics filter queue
 	 *
-	 * @param	Callable	$filter
+	 * @param	Callable	$filterCallback
+	 *
+	 * @param	array	$filterParams
 	 *
 	 * @return	void
 	 */
-	public function registerHonorificsFilter( Callable $filter )
+	public function registerHonorificsFilter( Callable $filterCallback, array $filterParams=[] )
 	{
+		$filter['callback'] = $filterCallback;
+		$filter['params'] = $filterParams;
+
 		$this->honorificsFilters[] = $filter;
 	}
 
@@ -426,12 +447,17 @@ class Engine
 	/**
 	 * Pushes a filter onto the end of the last name filter queue
 	 *
-	 * @param	Callable	$filter
+	 * @param	Callable	$filterCallback
+	 *
+	 * @param	array	$filterParams
 	 *
 	 * @return	void
 	 */
-	public function registerLastNameFilter( Callable $filter )
+	public function registerLastNameFilter( Callable $filterCallback, array $filterParams=[] )
 	{
+		$filter['callback'] = $filterCallback;
+		$filter['params'] = $filterParams;
+
 		$this->lastNameFilters[] = $filter;
 	}
 }

@@ -9,22 +9,26 @@ use PHPUnit\Framework\TestCase;
 
 class EngineTest extends TestCase
 {
-	public function provider____filterMultipleHyphens() : array
+	public function provider____filterHyphens() : array
 	{
 		return [
-			['Cinderford', true],
-			['Electro-Mechanical', true],
-			['Bradford-On-Avon', false],
-			['Chapel-En-Le-Frith', false],
+			['Cinderford', 0, true],
+			['Cinderford', 1, true],
+			['Electro-Mechanical', 0, false],
+			['Electro-Mechanical', 1, true],
+			['Bradford-On-Avon', 1, false],
+			['Bradford-On-Avon', 2, true],
+			['Chapel-En-Le-Frith', 1, false],
+			['Chapel-En-Le-Frith', 3, true],
 		];
 	}
 
 	/**
-	 * @dataProvider	provider____filterMultipleHyphens
+	 * @dataProvider	provider____filterHyphens
 	 */
-	public function test____filterMultipleHyphens( $string, $expectedResult )
+	public function test____filterHyphens( string $string, int $maxCount, bool $expectedResult )
 	{
-		$actualResult = Engine::___filterMultipleHyphens( $string );
+		$actualResult = Engine::___filterHyphens( $string, $maxCount );
 		$this->assertEquals( $expectedResult, $actualResult );
 	}
 
@@ -397,7 +401,7 @@ class EngineTest extends TestCase
 		$corpus = new Corpus( 'hyphen', ['Cinderford','Bradford-On-Avon'] );
 
 		$engine->registerFirstNameCorpus( $corpus );
-		$engine->registerFirstNameFilter( [$engine, '___filterMultipleHyphens'] );
+		$engine->registerFirstNameFilter( [$engine, '___filterHyphens'], [1] );
 
 		/* Test multiple times to make sure we're not just randomly succeeding */
 		for( $i=1; $i<5; $i++ )
@@ -434,7 +438,7 @@ class EngineTest extends TestCase
 		$corpus = new Corpus( 'hyphen', ['Dr.','Vice Chancellor'] );
 
 		$engine->registerHonorificsCorpus( $corpus );
-		$engine->registerHonorificsFilter( [$engine, '___filterSpaces'] );
+		$engine->registerHonorificsFilter( [$engine, '___filterSpaces'], [0] );
 
 		/* Test multiple times to make sure we're not just randomly succeeding */
 		for( $i=1; $i<5; $i++ )
@@ -471,7 +475,7 @@ class EngineTest extends TestCase
 		$corpus = new Corpus( 'hyphen', ['Cinderford','Bradford-On-Avon'] );
 
 		$engine->registerLastNameCorpus( $corpus );
-		$engine->registerLastNameFilter( [$engine, '___filterMultipleHyphens'] );
+		$engine->registerLastNameFilter( [$engine, '___filterHyphens'], [1] );
 
 		/* Test multiple times to make sure we're not just randomly succeeding */
 		for( $i=1; $i<5; $i++ )
