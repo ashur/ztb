@@ -397,6 +397,25 @@ class Engine
 	}
 
 	/**
+	 * Pushes a filter onto the end of the given filter queue
+	 *
+	 * @param	array	$filterQueue
+	 *
+	 * @param	Callable	$filterCallback
+	 *
+	 * @param	array	$filterParams
+	 *
+	 * @return	void
+	 */
+	protected function registerFilter( array &$filterQueue, Callable $filterCallback, array $filterParams=[] )
+	{
+		$filter['callback'] = $filterCallback;
+		$filter['params'] = $filterParams;
+
+		$filterQueue[] = $filter;
+	}
+
+	/**
 	 * Register given Corpus in first-name pool
 	 *
 	 * @param	ZTB\Corpus	$corpus
@@ -419,10 +438,7 @@ class Engine
 	 */
 	public function registerFirstNameFilter( Callable $filterCallback, array $filterParams=[] )
 	{
-		$filter['callback'] = $filterCallback;
-		$filter['params'] = $filterParams;
-
-		$this->firstNameFilters[] = $filter;
+		$this->registerFilter( $this->firstNameFilters, $filterCallback, $filterParams );
 	}
 
 	/**
@@ -436,10 +452,7 @@ class Engine
 	 */
 	public function registerGlobalFilter( Callable $filterCallback, array $filterParams=[] )
 	{
-		$filter['callback'] = $filterCallback;
-		$filter['params'] = $filterParams;
-
-		$this->globalFilters[] = $filter;
+		$this->registerFilter( $this->globalFilters, $filterCallback, $filterParams );
 	}
 
 	/**
@@ -465,10 +478,7 @@ class Engine
 	 */
 	public function registerHonorificsFilter( Callable $filterCallback, array $filterParams=[] )
 	{
-		$filter['callback'] = $filterCallback;
-		$filter['params'] = $filterParams;
-
-		$this->honorificsFilters[] = $filter;
+		$this->registerFilter( $this->honorificsFilters, $filterCallback, $filterParams );
 	}
 
 	/**
@@ -494,9 +504,6 @@ class Engine
 	 */
 	public function registerLastNameFilter( Callable $filterCallback, array $filterParams=[] )
 	{
-		$filter['callback'] = $filterCallback;
-		$filter['params'] = $filterParams;
-
-		$this->lastNameFilters[] = $filter;
+		$this->registerFilter( $this->lastNameFilters, $filterCallback, $filterParams );
 	}
 }
