@@ -283,16 +283,16 @@ class Engine
 	}
 
 	/**
-     * Returns a random value from the given Corpus object which is not present
-     * in the associated History domain.
-     *
-     * If all Corpus values are exhausted, reset the domain in the given History
-     * object and try again
-     *
-     * @return    string
-     */
-    static public function getRandomValueFromCorpus( Corpus $corpus, History &$history ) : string
-    {
+	 * Returns a random value from the given Corpus object which is not present
+	 * in the associated History domain.
+	 *
+	 * If all Corpus values are exhausted, reset the domain in the given History
+	 * object and try again
+	 *
+	 * @return    string
+	 */
+	static public function getRandomValueFromCorpus( Corpus $corpus, History &$history ) : string
+	{
 		$corpusName = $corpus->getName();
 		$corpusValues = $corpus->getAllItems();
 
@@ -316,7 +316,7 @@ class Engine
 		$history->removeDomain( $corpusName );
 
 		return self::getRandomValueFromCorpus( $corpus, $history );
-    }
+	}
 
 	/**
 	 * Returns a random string from the given Corpus pool.
