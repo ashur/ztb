@@ -80,6 +80,16 @@ class Engine
 	protected $occupationsFilters=[];
 
 	/**
+	 * @var	array
+	 */
+	protected $performerPrefixesCorpusPool=[];
+
+	/**
+	 * @var	ZTB\Corpus
+	 */
+	protected $prefixPatternCorpus;
+
+	/**
 	 * @var	ZTB\Corpus
 	 */
 	protected $rolePatternCorpus;
@@ -98,7 +108,8 @@ class Engine
 
 		$this->corporaDirectory = $corporaDirectory;
 
-		$this->namePatternCorpus = new Corpus( 'name_pattern', ['%F %L', '%F'] );
+		$this->namePatternCorpus = new Corpus( 'name_pattern', ['%F %L', '%F', '%F '] );
+		$this->prefixPatternCorpus = new Corpus( 'prefix_pattern', ['%P'] );
 		$this->rolePatternCorpus = new Corpus( 'role_pattern', ['the %O', '%C'] );
 	}
 
@@ -182,6 +193,8 @@ class Engine
 			$rolePattern = str_replace( '%C', $occupation, $rolePattern );
 		}
 
+		$rolePattern = trim( $rolePattern );
+
 		return $rolePattern;
 	}
 
@@ -243,6 +256,27 @@ class Engine
 		}
 
 		return $namePattern;
+	}
+
+	/**
+	 * Returns a performer prefix
+	 *
+	 * @return	string
+	 */
+	public function getPerformerPrefix() : string
+	{
+		$prefixPattern = $this->getRandomValueFromCorpus( $this->prefixPatternCorpus, $this->history );
+		$this->history->addDomainItem( $this->prefixPatternCorpus->getName(), $prefixPattern );
+
+		/* Prefix */
+		if( substr_count( $prefixPattern, '%P' ) )
+		{
+			$prefix = $this->getRandomPerformerPrefix();
+			$prefixPattern = str_replace( '%P', $prefix, $prefixPattern );
+		}
+
+		$prefixPattern = trim( $prefixPattern );
+		return $prefixPattern;
 	}
 
 	/**
@@ -363,6 +397,16 @@ class Engine
 	public function getRandomOccupation() : string
 	{
 		return $this->getRandomFilteredStringFromCorpusPool( $this->occupationsFilters, $this->occupationsCorpusPool );
+	}
+
+	/**
+	 * Returns random, filtered value from performer prefixes Corpus pool
+	 *
+	 * @return	string
+	 */
+	public function getRandomPerformerPrefix() : string
+	{
+		return $this->getRandomFilteredStringFromCorpusPool( [], $this->performerPrefixesCorpusPool );
 	}
 
 	/**
@@ -628,6 +672,18 @@ class Engine
 	public function registerOccupationsFilter( Callable $filterCallback, array $filterParams=[] )
 	{
 		$this->registerFilter( $this->occupationsFilters, $filterCallback, $filterParams );
+	}
+
+	/**
+	 * Register given Corpus in performer-prefix pool
+	 *
+	 * @param	ZTB\Corpus	$corpus
+	 *
+	 * @return	void
+	 */
+	public function registerPerformerPrefixCorpus( Corpus $corpus )
+	{
+		$this->performerPrefixesCorpusPool[] = $corpus;
 	}
 
 	/**

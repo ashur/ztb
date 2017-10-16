@@ -210,8 +210,7 @@ class EngineTest extends TestCase
 		/* Test multiple times to make sure we're not just randomly succeeding */
 		for( $i=1; $i<=5; $i++ )
 		{
-			$performerName = ucwords( $engine->getPerformerName() );
-			$this->assertTrue( in_array( $performerName, $nameCandidates ) );
+			$this->assertTrue( in_array( $engine->getPerformerName(), $nameCandidates ) );
 		}
 
 		$engine->writeHistory();
@@ -640,6 +639,27 @@ class EngineTest extends TestCase
 		for( $i=1; $i<5; $i++ )
 		{
 			$this->assertEquals( 'violet', $engine->getRandomOccupation() );
+		}
+	}
+
+	public function test_registerPerformerPrefix_CorpusAndFilter()
+	{
+		$historyFileMock = $this->getHistoryFileMock();
+		$corporaDirectoryStub = $this
+			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$corpus = new Corpus( 'colors', ['violet','red orange yellow green blue indigo'] );
+
+		$engine->registerPerformerPrefixCorpus( $corpus );
+		$engine->registerGlobalFilter( [$engine, '___filterSpaces'], [4] );
+
+		/* Test multiple times to make sure we're not just randomly succeeding */
+		for( $i=1; $i<5; $i++ )
+		{
+			$this->assertEquals( 'violet', $engine->getRandomPerformerPrefix() );
 		}
 	}
 
