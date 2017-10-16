@@ -117,14 +117,20 @@ $___bootstrap = function( Shell\Application &$app )
 			throw new \RuntimeException( sprintf( "Invalid configuration: '%s' in %s", json_last_error_msg(), $configFile->getPathname() ) );
 		}
 
+		if( !isset( $config['corpora'] ) )
+		{
+			throw new \RuntimeException( sprintf( "Invalid configuration: Missing required key '%s' in %s", 'corpora', $configFile->getPathname() ) );
+		}
+
+		/* File-based corpora */
 		foreach( ['first_names','last_names','characters','occupations'] as $corpusPool )
 		{
-			if( !isset( $config[$corpusPool] ) )
+			if( !isset( $config['corpora']['files'][$corpusPool] ) )
 			{
 				throw new \RuntimeException( sprintf( "Invalid configuration: Missing required key '%s' in %s", $corpusPool, $configFile->getPathname() ) );
 			}
 
-			foreach( $config[$corpusPool] as $corpusInfo )
+			foreach( $config['corpora']['files'][$corpusPool] as $corpusInfo )
 			{
 				$corpusDomain = isset( $corpusInfo['domain'] ) ? $corpusInfo['domain'] : null;
 				$corpus = $engine->getCorpus( $corpusInfo['category'], $corpusInfo['corpus'], $corpusDomain );
