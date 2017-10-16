@@ -84,25 +84,10 @@ $___bootstrap = function( Shell\Application &$app )
 	 *
 	 * @param	ZTB\Engine	$engine
 	 *
-	 * @todo	Populate $unwantedWords
-	 *
 	 * @return	Middleware\Middleware::CONTINUE
 	 */
 	$___register = function( Input\InputInterface $input, Output\OutputInterface $output, Engine $engine )
 	{
-		/*
-		 * Filters
-		 */
-		$engine->registerGlobalFilter( [$engine, '___filterHyphens'], [1] );
-		$engine->registerGlobalFilter( [$engine, '___filterSpaces'], [0] );
-
-		// TODO
-		$unwantedWords = [];
-		$engine->registerGlobalFilter( [$engine, '___filterUnwantedWords'], [$unwantedWords] );
-
-		/*
-		 * Corpora
-		 */
 		$dataPathname = $input->getEnv( 'ZTB_DATA' );
 		$dataDirectory = new Filesystem\Directory( $dataPathname );
 
@@ -117,6 +102,20 @@ $___bootstrap = function( Shell\Application &$app )
 			throw new \RuntimeException( sprintf( "Invalid configuration: '%s' in %s", json_last_error_msg(), $configFile->getPathname() ) );
 		}
 
+		/*
+		 * Filters
+		 */
+		$engine->registerGlobalFilter( [$engine, '___filterHyphens'], [1] );
+		$engine->registerGlobalFilter( [$engine, '___filterSpaces'], [0] );
+
+		if( isset( $config['unwanted_words'] ) )
+		{
+			$engine->registerGlobalFilter( [$engine, '___filterUnwantedWords'], [$config['unwanted_words']] );
+		}
+
+		/*
+		 * Corpora
+		 */
 		if( !isset( $config['corpora'] ) )
 		{
 			throw new \RuntimeException( sprintf( "Invalid configuration: Missing required key '%s' in %s", 'corpora', $configFile->getPathname() ) );
