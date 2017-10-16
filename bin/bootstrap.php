@@ -117,7 +117,7 @@ $___bootstrap = function( Shell\Application &$app )
 			throw new \RuntimeException( sprintf( "Invalid configuration: '%s' in %s", json_last_error_msg(), $configFile->getPathname() ) );
 		}
 
-		foreach( ['first_names','last_names'] as $corpusPool )
+		foreach( ['first_names','last_names','characters','occupations'] as $corpusPool )
 		{
 			if( !isset( $config[$corpusPool] ) )
 			{
@@ -137,6 +137,14 @@ $___bootstrap = function( Shell\Application &$app )
 
 					case 'last_names':
 						$engine->registerLastNameCorpus( $corpus );
+						break;
+
+					case 'characters':
+						$engine->registerCharacterNameCorpus( $corpus );
+						break;
+
+					case 'occupations':
+						$engine->registerOccupationsCorpus( $corpus );
 						break;
 				}
 			}

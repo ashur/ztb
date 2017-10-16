@@ -12,6 +12,16 @@ class Engine
 	/**
 	 * @var	array
 	 */
+	protected $characterNameCorpusPool=[];
+
+	/**
+	 * @var	array
+	 */
+	protected $characterNameFilters=[];
+
+	/**
+	 * @var	array
+	 */
 	protected $firstNameCorpusPool=[];
 
 	/**
@@ -57,7 +67,22 @@ class Engine
 	/**
 	 * @var	ZTB\Corpus
 	 */
-	protected $nameCorpus;
+	protected $namePatternCorpus;
+
+	/**
+	 * @var	array
+	 */
+	protected $occupationsCorpusPool=[];
+
+	/**
+	 * @var	array
+	 */
+	protected $occupationsFilters=[];
+
+	/**
+	 * @var	ZTB\Corpus
+	 */
+	protected $rolePatternCorpus;
 
 	/**
 	 * @param	ZTB\History	$history
@@ -74,6 +99,7 @@ class Engine
 		$this->corporaDirectory = $corporaDirectory;
 
 		$this->namePatternCorpus = new Corpus( 'name_pattern', ['%F %L', '%F'] );
+		$this->rolePatternCorpus = new Corpus( 'role_pattern', ['the %O', '%C'] );
 	}
 
 	/**
@@ -127,6 +153,36 @@ class Engine
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Returns a character name
+	 *
+	 * @return	string
+	 */
+	public function getRole() : string
+	{
+		$rolePattern = $this->getRandomValueFromCorpus( $this->rolePatternCorpus, $this->history );
+		$this->history->addDomainItem( $this->rolePatternCorpus->getName(), $rolePattern );
+
+		/* Occupation */
+		if( substr_count( $rolePattern, '%O' ) )
+		{
+			$occupation = $this->getRandomOccupation();
+			$occupation = ucwords( $occupation, " \t\r\n\f\v-" );
+
+			$rolePattern = str_replace( '%O', $occupation, $rolePattern );
+		}
+		/* Character Name */
+		if( substr_count( $rolePattern, '%C' ) )
+		{
+			$occupation = $this->getRandomCharacterName();
+			$occupation = ucwords( $occupation, " \t\r\n\f\v-" );
+
+			$rolePattern = str_replace( '%C', $occupation, $rolePattern );
+		}
+
+		return $rolePattern;
 	}
 
 	/**
@@ -260,6 +316,16 @@ class Engine
 	}
 
 	/**
+	 * Returns random, filtered value from character name Corpus pool
+	 *
+	 * @return	string
+	 */
+	public function getRandomCharacterName() : string
+	{
+		return $this->getRandomFilteredStringFromCorpusPool( $this->characterNameFilters, $this->characterNameCorpusPool );
+	}
+
+	/**
 	 * Returns random, filtered value from first-name Corpus pool
 	 *
 	 * @return	string
@@ -287,6 +353,16 @@ class Engine
 	public function getRandomLastName() : string
 	{
 		return $this->getRandomFilteredStringFromCorpusPool( $this->lastNameFilters, $this->lastNameCorpusPool );
+	}
+
+	/**
+	 * Returns random, filtered value from occupations Corpus pool
+	 *
+	 * @return	string
+	 */
+	public function getRandomOccupation() : string
+	{
+		return $this->getRandomFilteredStringFromCorpusPool( $this->occupationsFilters, $this->occupationsCorpusPool );
 	}
 
 	/**
@@ -411,6 +487,32 @@ class Engine
 	}
 
 	/**
+	 * Register given Corpus in character-name pool
+	 *
+	 * @param	ZTB\Corpus	$corpus
+	 *
+	 * @return	void
+	 */
+	public function registerCharacterNameCorpus( Corpus $corpus )
+	{
+		$this->characterNameCorpusPool[] = $corpus;
+	}
+
+	/**
+	 * Pushes a filter onto the end of the character name filter queue
+	 *
+	 * @param	Callable	$filterCallback
+	 *
+	 * @param	array	$filterParams
+	 *
+	 * @return	void
+	 */
+	public function registerCharacterNameFilter( Callable $filterCallback, array $filterParams=[] )
+	{
+		$this->registerFilter( $this->characterNameFilters, $filterCallback, $filterParams );
+	}
+
+	/**
 	 * Register given Corpus in first-name pool
 	 *
 	 * @param	ZTB\Corpus	$corpus
@@ -500,6 +602,32 @@ class Engine
 	public function registerLastNameFilter( Callable $filterCallback, array $filterParams=[] )
 	{
 		$this->registerFilter( $this->lastNameFilters, $filterCallback, $filterParams );
+	}
+
+	/**
+	 * Register given Corpus in occupations pool
+	 *
+	 * @param	ZTB\Corpus	$corpus
+	 *
+	 * @return	void
+	 */
+	public function registerOccupationsCorpus( Corpus $corpus )
+	{
+		$this->occupationsCorpusPool[] = $corpus;
+	}
+
+	/**
+	 * Pushes a filter onto the end of the occupations filter queue
+	 *
+	 * @param	Callable	$filterCallback
+	 *
+	 * @param	array	$filterParams
+	 *
+	 * @return	void
+	 */
+	public function registerOccupationsFilter( Callable $filterCallback, array $filterParams=[] )
+	{
+		$this->registerFilter( $this->occupationsFilters, $filterCallback, $filterParams );
 	}
 
 	/**

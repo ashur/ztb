@@ -328,6 +328,40 @@ class EngineTest extends TestCase
 		$randomValue = Engine::getRandomCorpusFromPool( $corpusPool, $history );
 	}
 
+	public function test_getRole()
+	{
+		$historyFileMock = $this->getHistoryFileMock();
+		$corporaDirectoryStub = $this
+			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+
+		$engine->registerCharacterNameCorpus( new Corpus( 'foobar', ['foo', 'bar-baz'] ) );
+		$engine->registerOccupationsCorpus( new Corpus( 'colors', ['red orange yellow', 'green', 'blue-indigo violet'] ) );
+
+		$expectedRoles[] = 'the Red Orange Yellow';
+		$expectedRoles[] = 'the Green';
+		$expectedRoles[] = 'the Blue-Indigo Violet';
+		$expectedRoles[] = 'Foo';
+		$expectedRoles[] = 'Bar-Baz';
+
+		sort( $expectedRoles );
+
+		/* Test multiple times to make sure we're not just randomly succeeding */
+		$actualRoles = [];
+		for( $i=1; $i<=10; $i++ )
+		{
+			$actualRoles[] = $engine->getRole();
+		}
+
+		$actualRoles = array_unique( $actualRoles );
+		sort( $actualRoles );
+
+		$this->assertEquals( $expectedRoles, $actualRoles );
+	}
+
 	public function provider_isCorpusExhausted() : array
 	{
 		return
@@ -415,6 +449,27 @@ class EngineTest extends TestCase
 		$corpusPool[] = new Corpus( 'fruits', ['blueberry','raisin'] );
 
 		$this->assertEquals( $isCorpusPoolExhausted, Engine::isCorpusPoolExhausted( $corpusPool, $history ) );
+	}
+
+	public function test_registerCharacterName_CorpusAndFilter()
+	{
+		$historyFileMock = $this->getHistoryFileMock();
+		$corporaDirectoryStub = $this
+			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$corpus = new Corpus( 'firstNames', ['Foo', 'Bar Baz'] );
+
+		$engine->registerCharacterNameCorpus( $corpus );
+		$engine->registerCharacterNameFilter( [$engine, '___filterSpaces'], [0] );
+
+		/* Test multiple times to make sure we're not just randomly succeeding */
+		for( $i=1; $i<5; $i++ )
+		{
+			$this->assertEquals( 'Foo', $engine->getRandomCharacterName() );
+		}
 	}
 
 	public function test_registerFirstNameCorpus()
@@ -548,6 +603,43 @@ class EngineTest extends TestCase
 		for( $i=1; $i<5; $i++ )
 		{
 			$this->assertEquals( 'Cinderford', $engine->getRandomLastName() );
+		}
+	}
+
+	public function test_registerOccupationsCorpus()
+	{
+		$historyFileMock = $this->getHistoryFileMock();
+		$corporaDirectoryStub = $this
+			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+
+		$corpus = new Corpus( 'colors', ['violet'] );
+		$engine->registerOccupationsCorpus( $corpus );
+
+		$this->assertEquals( 'violet', $engine->getRandomOccupation() );
+	}
+
+	public function test_registerOccupationsFilter()
+	{
+		$historyFileMock = $this->getHistoryFileMock();
+		$corporaDirectoryStub = $this
+			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$corpus = new Corpus( 'colors', ['violet','red orange yellow green blue indigo'] );
+
+		$engine->registerOccupationsCorpus( $corpus );
+		$engine->registerOccupationsFilter( [$engine, '___filterSpaces'], [4] );
+
+		/* Test multiple times to make sure we're not just randomly succeeding */
+		for( $i=1; $i<5; $i++ )
+		{
+			$this->assertEquals( 'violet', $engine->getRandomOccupation() );
 		}
 	}
 
