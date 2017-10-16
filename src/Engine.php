@@ -501,4 +501,14 @@ class Engine
 	{
 		$this->registerFilter( $this->lastNameFilters, $filterCallback, $filterParams );
 	}
+
+	/**
+	 * Write contents of history object to file
+	 *
+	 * @return	void
+	 */
+	public function writeHistory()
+	{
+		$this->history->writeToFile( $this->historyFile );
+	}
 }

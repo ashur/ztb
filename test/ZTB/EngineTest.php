@@ -550,4 +550,22 @@ class EngineTest extends TestCase
 			$this->assertEquals( 'Cinderford', $engine->getRandomLastName() );
 		}
 	}
+
+	public function test_writeHistory()
+	{
+		$historyFileMock = $this->getHistoryFileMock();
+
+		$historyFileMock
+			->expects( $this->once() )
+			->method( 'putContents' )
+			->with( $this->equalTo( '[]' ) );
+
+		$corporaDirectoryStub = $this
+			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$engine->writeHistory();
+	}
 }
