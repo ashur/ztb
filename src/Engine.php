@@ -255,6 +255,9 @@ class Engine
 			$namePattern = str_replace( '%H', $honorific, $namePattern );
 		}
 
+		$namePattern = trim( $namePattern );
+		$namePattern = ucwords( $namePattern, " \t\r\n\f\v-" );
+
 		return $namePattern;
 	}
 
