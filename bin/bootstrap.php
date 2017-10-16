@@ -66,10 +66,9 @@ $___bootstrap = function( Shell\Application &$app )
 		{
 			$historyFile->putContents( '[]' );
 		}
-		$history = History::createFromJSONEncodedFile( $historyFile );
 
-        /* Engine */
-		$engine = new Engine( $history, $corporaDirectory );
+		/* Engine */
+		$engine = new Engine( $historyFile, $corporaDirectory );
 		$this->registerMiddlewareParameter( $engine );
 
 		return Middleware\Middleware::CONTINUE;
