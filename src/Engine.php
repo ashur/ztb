@@ -30,6 +30,11 @@ class Engine
 	protected $history;
 
 	/**
+	 * @var	Cranberry\Filesystem\File
+	 */
+	protected $historyFile;
+
+	/**
 	 * @var	array
 	 */
 	protected $honorificsCorpusPool=[];
@@ -61,9 +66,11 @@ class Engine
 	 *
 	 * @return	void
 	 */
-	public function __construct( History $history, Filesystem\Directory $corporaDirectory )
+	public function __construct( Filesystem\File $historyFile, Filesystem\Directory $corporaDirectory )
 	{
-		$this->history = $history;
+		$this->historyFile = $historyFile;
+		$this->history = History::createFromJSONEncodedFile( $historyFile );
+
 		$this->corporaDirectory = $corporaDirectory;
 
 		$this->namePatternCorpus = new Corpus( 'name_pattern', ['%F %L', '%F'] );

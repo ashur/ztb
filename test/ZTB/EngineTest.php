@@ -9,6 +9,26 @@ use PHPUnit\Framework\TestCase;
 
 class EngineTest extends TestCase
 {
+	/**
+	 * Returns mock of file containing JSON-encoded History data
+	 *
+	 * @return	\Cranberry\Filesystem\File
+	 */
+	public function getHistoryFileMock() : \Cranberry\Filesystem\File
+	{
+		$historyFileMock = $this
+			->getMockBuilder( \Cranberry\Filesystem\File::class )
+			->disableOriginalConstructor()
+			->setMethods( ['getContents','putContents'] )
+			->getMock();
+
+		$historyFileMock
+			->method( 'getContents' )
+			->willReturn( '[]' );
+
+		return $historyFileMock;
+	}
+
 	public function provider____filterHyphens() : array
 	{
 		return [
@@ -118,8 +138,9 @@ class EngineTest extends TestCase
 			->method( 'getChild' )
 			->willReturn( $categoryDirectoryStub );
 
-		$history = new History();
-		$engine = new Engine( $history, $corporaDirectoryStub );
+		$historyFileMock = $this->getHistoryFileMock();
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+
 		$corpus = $engine->getCorpus( 'foods', 'condiments', $domainParam );
 
 		$this->assertEquals( $corpusItems, $corpus->getAllItems() );
@@ -159,30 +180,32 @@ class EngineTest extends TestCase
 			->method( 'getChild' )
 			->willReturn( $categoryDirectoryStub );
 
-		$history = new History();
-		$engine = new Engine( $history, $corporaDirectoryStub );
+		$historyFileMock = $this->getHistoryFileMock();
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
 		$engine->getCorpus( 'foo', 'bar' );
 	}
 
 	public function test_getPerformerName()
 	{
-		$history = new History();
+		$historyFileMock = $this->getHistoryFileMock();
+
+		$historyFileMock
+			->expects( $this->once() )
+			->method( 'putContents' )
+			->with( $this->stringContains( 'name_pattern' ) );
+
 		$corporaDirectoryStub = $this
 			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $history, $corporaDirectoryStub );
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
 
 		$engine->registerFirstNameCorpus( new Corpus( 'fruits', ['blueberry'] ) );
-		$engine->registerHonorificsCorpus( new Corpus( 'honorifics', ['Admiral'] ) );
 		$engine->registerLastNameCorpus( new Corpus( 'cities', ['Avondale'] ) );
-
-		$this->assertFalse( $history->hasDomain( 'name_pattern' ) );
 
 		$nameCandidates[] = 'Blueberry Avondale';
 		$nameCandidates[] = 'Blueberry';
-		$nameCandidates[] = 'Admiral Blueberry';
 
 		/* Test multiple times to make sure we're not just randomly succeeding */
 		for( $i=1; $i<=5; $i++ )
@@ -191,7 +214,7 @@ class EngineTest extends TestCase
 			$this->assertTrue( in_array( $performerName, $nameCandidates ) );
 		}
 
-		$this->assertTrue( $history->hasDomain( 'name_pattern' ) );
+		$engine->writeHistory();
 	}
 
 	public function test_getRandomCorpusFromPool_ReturnsNonExhaustedCorpus()
@@ -396,13 +419,13 @@ class EngineTest extends TestCase
 
 	public function test_registerFirstNameCorpus()
 	{
-		$history = new History();
+		$historyFileMock = $this->getHistoryFileMock();
 		$corporaDirectoryStub = $this
 			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $history, $corporaDirectoryStub );
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
 
 		$corpus = new Corpus( 'fruits', ['blueberry'] );
 		$engine->registerFirstNameCorpus( $corpus );
@@ -412,13 +435,13 @@ class EngineTest extends TestCase
 
 	public function test_registerFirstNameFilter()
 	{
-		$history = new History();
+		$historyFileMock = $this->getHistoryFileMock();
 		$corporaDirectoryStub = $this
 			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $history, $corporaDirectoryStub );
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
 		$corpus = new Corpus( 'hyphen', ['Cinderford','Bradford-On-Avon'] );
 
 		$engine->registerFirstNameCorpus( $corpus );
@@ -433,13 +456,13 @@ class EngineTest extends TestCase
 
 	public function test_registerGlobalFilter()
 	{
-		$history = new History();
+		$historyFileMock = $this->getHistoryFileMock();
 		$corporaDirectoryStub = $this
 			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $history, $corporaDirectoryStub );
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
 		$corpus = new Corpus( 'first_names', ['Pepsi','Snoopy','Max'] );
 
 		$engine->registerFirstNameCorpus( $corpus );
@@ -456,13 +479,13 @@ class EngineTest extends TestCase
 
 	public function test_registerHonorificsCorpus()
 	{
-		$history = new History();
+		$historyFileMock = $this->getHistoryFileMock();
 		$corporaDirectoryStub = $this
 			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $history, $corporaDirectoryStub );
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
 
 		$corpus = new Corpus( 'honorifics', ['Admiral'] );
 		$engine->registerHonorificsCorpus( $corpus );
@@ -472,13 +495,13 @@ class EngineTest extends TestCase
 
 	public function test_registerHonorificsFilter()
 	{
-		$history = new History();
+		$historyFileMock = $this->getHistoryFileMock();
 		$corporaDirectoryStub = $this
 			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $history, $corporaDirectoryStub );
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
 		$corpus = new Corpus( 'hyphen', ['Dr.','Vice Chancellor'] );
 
 		$engine->registerHonorificsCorpus( $corpus );
@@ -493,13 +516,13 @@ class EngineTest extends TestCase
 
 	public function test_registerLastNameCorpus()
 	{
-		$history = new History();
+		$historyFileMock = $this->getHistoryFileMock();
 		$corporaDirectoryStub = $this
 			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $history, $corporaDirectoryStub );
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
 
 		$corpus = new Corpus( 'condiments', ['mayonnaise'] );
 		$engine->registerLastNameCorpus( $corpus );
@@ -509,13 +532,13 @@ class EngineTest extends TestCase
 
 	public function test_registerLastNameFilter()
 	{
-		$history = new History();
+		$historyFileMock = $this->getHistoryFileMock();
 		$corporaDirectoryStub = $this
 			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $history, $corporaDirectoryStub );
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
 		$corpus = new Corpus( 'hyphen', ['Cinderford','Bradford-On-Avon'] );
 
 		$engine->registerLastNameCorpus( $corpus );
