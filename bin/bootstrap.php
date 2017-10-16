@@ -155,6 +155,13 @@ $___bootstrap = function( Shell\Application &$app )
 			}
 		}
 
+		/* Config-based corpora */
+		if( isset( $config['corpora']['definitions']['performer_prefixes'] ) )
+		{
+			$corpus = new Corpus( 'performer_prefixes', $config['corpora']['definitions']['performer_prefixes'] );
+			$engine->registerPerformerPrefixCorpus( $corpus );
+		}
+
 		return Middleware\Middleware::CONTINUE;
 	};
 	$app->pushMiddleware( new Middleware\Middleware( $___register ) );
