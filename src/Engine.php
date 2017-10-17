@@ -110,7 +110,7 @@ class Engine
 
 		$this->namePatternCorpus = new Corpus( 'name_pattern', ['%F %L', '%F', '%F '] );
 		$this->prefixPatternCorpus = new Corpus( 'prefix_pattern', ['%P'] );
-		$this->rolePatternCorpus = new Corpus( 'role_pattern', ['the %O', '%C'] );
+		$this->rolePatternCorpus = new Corpus( 'role_pattern', ['the %O', 'the %O', '%C', '%C', '%O #%n'] );
 	}
 
 	/**
@@ -191,6 +191,14 @@ class Engine
 			$occupation = ucwords( $occupation, " \t\r\n\f\v-" );
 
 			$rolePattern = str_replace( '%C', $occupation, $rolePattern );
+		}
+		/* Number */
+		if( substr_count( $rolePattern, '%n' ) )
+		{
+			$roleNumber = $this->getRandomValueFromCorpus( new Corpus( 'role_number', [1,2,3] ), $this->history );
+			$this->history->addDomainItem( 'role_number', $roleNumber );
+
+			$rolePattern = str_replace( '%n', $roleNumber, $rolePattern );
 		}
 
 		$rolePattern = trim( $rolePattern );
