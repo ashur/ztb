@@ -10,8 +10,8 @@ use Imagick;
 
 class Image
 {
-	const CROP_HEIGHT = 450;
-	const CROP_WIDTH = 600;
+	const HEIGHT = 450;
+	const WIDTH = 600;
 
 	/**
 	 * @var	array
@@ -32,7 +32,8 @@ class Image
 	{
 		$this->image = new Imagick( $imageFile->getPathname() );
 
-		$this->pushFilter( ['ZTB\Image', '___filterCrop'] );
+		$this->pushFilter( ['self', '___filterResize'] );
+		$this->pushFilter( ['self', '___filterCrop'] );
 	}
 
 	/**
@@ -44,10 +45,22 @@ class Image
 	 */
 	static public function ___filterCrop( Imagick &$image )
 	{
-		$xOffset = ($image->getImageWidth() - self::CROP_WIDTH) / 2;
-		$yOffset = ($image->getImageHeight() - self::CROP_HEIGHT) / 2;
+		$xOffset = ($image->getImageWidth() - self::WIDTH) / 2;
+		$yOffset = ($image->getImageHeight() - self::HEIGHT) / 2;
 
-		$image->cropImage( self::CROP_WIDTH, self::CROP_HEIGHT, $xOffset, $yOffset );
+		$image->cropImage( self::WIDTH, self::HEIGHT, $xOffset, $yOffset );
+	}
+
+	/**
+	 * Resizes image to 600 x 450
+	 *
+	 * @param	Imagick	$image	Passed by reference
+	 *
+	 * @return	Imagick
+	 */
+	static public function ___filterResize( Imagick &$image )
+	{
+		$image->resizeImage( self::WIDTH, self::HEIGHT, Imagick::FILTER_CATROM, 1 );
 	}
 
 	/**

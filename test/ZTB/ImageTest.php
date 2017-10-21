@@ -60,13 +60,40 @@ class ImageTest extends TestCase
 
 		Image::___filterCrop( $sourceImage );
 
-		$this->assertEquals( Image::CROP_HEIGHT, $sourceImage->getImageHeight() );
-		$this->assertEquals( Image::CROP_WIDTH, $sourceImage->getImageWidth() );
+		$this->assertEquals( Image::HEIGHT, $sourceImage->getImageHeight() );
+		$this->assertEquals( Image::WIDTH, $sourceImage->getImageWidth() );
 	}
 
-	public function test_filterQueueContainsCropByDefault()
+	public function test___filterResize()
 	{
-		$sourceImageFile = $this->getFixtureFile( '700x550.png' );
+		$sourceImageFile = $this->getFixtureFile( '350x275.png' );
+		$sourceImage = new Imagick( $sourceImageFile->getPathname() );
+
+		$this->assertEquals( 275, $sourceImage->getImageHeight() );
+		$this->assertEquals( 350, $sourceImage->getImageWidth() );
+
+		Image::___filterResize( $sourceImage );
+
+		$this->assertEquals( Image::HEIGHT, $sourceImage->getImageHeight() );
+		$this->assertEquals( Image::WIDTH, $sourceImage->getImageWidth() );
+	}
+
+	public function provider_filterQueueDefaults() : array
+	{
+		return [
+			[ '700x550.png' ],
+			[ '350x275.png' ],
+			[ '600x550.png' ],
+			[ '700x450.png' ],
+		];
+	}
+
+	/**
+	 * @dataProvider	provider_filterQueueDefaults
+	 */
+	public function test_filterQueueDefaults( $fixtureFilename )
+	{
+		$sourceImageFile = $this->getFixtureFile( $fixtureFilename );
 		$filteredImageFile = $this->getTempFile( microtime( true ) . '.png' );
 
 		$sourceImage = new Image( $sourceImageFile );
@@ -80,8 +107,8 @@ class ImageTest extends TestCase
 
 		$filteredImage = new Imagick( $filteredImageFile->getPathname() );
 
-		$this->assertEquals( Image::CROP_HEIGHT, $filteredImage->getImageHeight() );
-		$this->assertEquals( Image::CROP_WIDTH, $filteredImage->getImageWidth() );
+		$this->assertEquals( Image::HEIGHT, $filteredImage->getImageHeight() );
+		$this->assertEquals( Image::WIDTH, $filteredImage->getImageWidth() );
 	}
 
 	static public function tearDownAfterClass()
