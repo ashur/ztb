@@ -145,7 +145,7 @@ class Image
 	 */
 	static public function ___filterResize( Imagick &$image )
 	{
-		$image->resizeImage( self::WIDTH, self::HEIGHT, Imagick::FILTER_CATROM, 1 );
+		$image->resizeImage( self::WIDTH, 0, Imagick::FILTER_CATROM, 1 );
 	}
 
 	/**
