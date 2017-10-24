@@ -133,6 +133,7 @@ class ImageTest extends TestCase
 			[ '350x275.png' ],
 			[ '600x550.png' ],
 			[ '700x450.png' ],
+			[ '550x700.png' ],
 		];
 	}
 
