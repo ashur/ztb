@@ -38,6 +38,55 @@ class Image
 	}
 
 	/**
+	 * Blurs image
+	 *
+	 * @param	Imagick	$image	Passed by reference
+	 *
+	 * @return	Imagick
+	 */
+	static public function ___filterBlur( Imagick &$image )
+	{
+		$image->gaussianBlurImage( 2, 2 );
+	}
+
+	/**
+	 * Blurs image on individual channels
+	 *
+	 * @param	Imagick	$image	Passed by reference
+	 *
+	 * @return	Imagick
+	 */
+	static public function ___filterChannelBlur( Imagick &$image )
+	{
+		$radius = 2;
+		$image->motionBlurImage( $radius, 1, 10, Imagick::COLOR_CYAN );
+		$image->motionBlurImage( $radius, 3, 20, Imagick::COLOR_MAGENTA );
+		$image->motionBlurImage( $radius, 4, 80, Imagick::COLOR_YELLOW );
+		$image->motionBlurImage( $radius, 1, 40, Imagick::COLOR_BLACK );
+	}
+
+	/**
+	 * Colorizes image
+	 *
+	 * @param	Imagick	$image	Passed by reference
+	 *
+	 * @return	Imagick
+	 */
+	static public function ___filterColorize( Imagick &$image )
+	{
+		$opacity = 0.27;
+		$opacityHex = sprintf( '%02s', dechex( floor( $opacity * 255 ) ) );
+
+		$overlay = new Imagick();
+		$overlayPattern = "gradient:#fca15e{$opacityHex}-#f07e2b{$opacityHex}";
+		$overlayPattern = "gradient:#a7b355{$opacityHex}-#f07e2b{$opacityHex}";
+
+		$overlay->newPseudoImage( self::WIDTH, self::HEIGHT, $overlayPattern );
+
+		$image->compositeImage( $overlay, Imagick::COMPOSITE_OVERLAY, 0, 0 );
+	}
+
+	/**
 	 * Rotates image to match orientation defined in EXIF data
 	 *
 	 * @param	Imagick	$image	Passed by reference
@@ -97,6 +146,19 @@ class Image
 	static public function ___filterResize( Imagick &$image )
 	{
 		$image->resizeImage( self::WIDTH, self::HEIGHT, Imagick::FILTER_CATROM, 1 );
+	}
+
+	/**
+	 * Adjusts image saturation and contrast
+	 *
+	 * @param	Imagick	$image	Passed by reference
+	 *
+	 * @return	Imagick
+	 */
+	static public function ___filterSaturate( Imagick &$image )
+	{
+		$image->modulateImage( 100, 110, 100 );
+		$image->contrastImage( 0 );
 	}
 
 	/**
