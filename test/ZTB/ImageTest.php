@@ -50,6 +50,51 @@ class ImageTest extends TestCase
 		return $imageFileStub;
 	}
 
+	public function provider___filterCorrectOrientation() : array
+	{
+		return [
+			[ Imagick::ORIENTATION_UNDEFINED,   0 ],
+			[ Imagick::ORIENTATION_TOPLEFT,     0 ],
+			[ Imagick::ORIENTATION_TOPRIGHT,    0 ],
+			[ Imagick::ORIENTATION_BOTTOMRIGHT, 180 ],
+			[ Imagick::ORIENTATION_BOTTOMLEFT,  180 ],
+			[ Imagick::ORIENTATION_LEFTTOP,     90 ],
+			[ Imagick::ORIENTATION_RIGHTTOP,    90 ],
+			[ Imagick::ORIENTATION_RIGHTBOTTOM, 270 ],
+			[ Imagick::ORIENTATION_LEFTBOTTOM,  270 ],
+		];
+	}
+
+	/**
+	 * @dataProvider	provider___filterCorrectOrientation
+	 */
+	public function test___filterCorrectOrientation( $orientation, $expectedRotation )
+	{
+		$sourceImageMock = $this
+			->getMockBuilder( Imagick::class )
+			->setMethods( ['getImageOrientation','rotateImage','setImageOrientation'] )
+			->getMock();
+
+		$sourceImageMock
+			->method( 'getImageOrientation' )
+			->willReturn( $orientation );
+
+		$sourceImageMock
+			->expects( $this->once() )
+			->method( 'rotateImage' )
+			->with(
+				$this->anything(),
+				$expectedRotation
+			);
+
+		$sourceImageMock
+			->expects( $this->once() )
+			->method( 'setImageOrientation' )
+			->with( Imagick::ORIENTATION_TOPLEFT );
+
+		Image::___filterCorrectOrientation( $sourceImageMock );
+	}
+
 	public function test___filterCrop()
 	{
 		$sourceImageFile = $this->getFixtureFile( '700x550.png' );

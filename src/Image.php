@@ -32,8 +32,44 @@ class Image
 	{
 		$this->image = new Imagick( $imageFile->getPathname() );
 
+		$this->pushFilter( ['self', '___filterCorrectOrientation'] );
 		$this->pushFilter( ['self', '___filterResize'] );
 		$this->pushFilter( ['self', '___filterCrop'] );
+	}
+
+	/**
+	 * Rotates image to match orientation defined in EXIF data
+	 *
+	 * @param	Imagick	$image	Passed by reference
+	 *
+	 * @return	Imagick
+	 */
+	static public function ___filterCorrectOrientation( Imagick &$image )
+	{
+		switch( $image->getImageOrientation() )
+		{
+			case Imagick::ORIENTATION_LEFTTOP:
+			case Imagick::ORIENTATION_RIGHTTOP:
+				$degrees = 90;
+				break;
+
+			case Imagick::ORIENTATION_BOTTOMLEFT:
+			case Imagick::ORIENTATION_BOTTOMRIGHT:
+				$degrees = 180;
+				break;
+
+			case Imagick::ORIENTATION_LEFTBOTTOM:
+			case Imagick::ORIENTATION_RIGHTBOTTOM:
+				$degrees = 270;
+				break;
+
+			default:
+				$degrees = 0;
+				break;
+		}
+
+		$image->rotateImage( '#00000000', $degrees );
+		$image->setImageOrientation( Imagick::ORIENTATION_TOPLEFT );
 	}
 
 	/**
