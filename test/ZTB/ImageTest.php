@@ -114,13 +114,16 @@ class ImageTest extends TestCase
 		$sourceImageFile = $this->getFixtureFile( '350x275.png' );
 		$sourceImage = new Imagick( $sourceImageFile->getPathname() );
 
-		$this->assertEquals( 275, $sourceImage->getImageHeight() );
 		$this->assertEquals( 350, $sourceImage->getImageWidth() );
+		$this->assertEquals( 275, $sourceImage->getImageHeight() );
 
 		Image::___filterResize( $sourceImage );
 
-		$this->assertEquals( Image::HEIGHT, $sourceImage->getImageHeight() );
+		$ratio = 275/350;
+		$expectedHeight = floor( $ratio * Image::WIDTH );
+
 		$this->assertEquals( Image::WIDTH, $sourceImage->getImageWidth() );
+		$this->assertEquals( $expectedHeight, $sourceImage->getImageHeight() );
 	}
 
 	public function provider_filterQueueDefaults() : array
