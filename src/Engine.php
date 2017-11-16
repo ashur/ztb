@@ -30,6 +30,11 @@ class Engine
 	protected $firstNameFilters=[];
 
 	/**
+	 * @var	Cranberry\Filesystem\File
+	 */
+	protected $fontFile;
+
+	/**
 	 * @var	array
 	 */
 	protected $globalFilters=[];
@@ -101,12 +106,14 @@ class Engine
 	 *
 	 * @return	void
 	 */
-	public function __construct( Filesystem\File $historyFile, Filesystem\Directory $corporaDirectory )
+	public function __construct( Filesystem\File $historyFile, Filesystem\Directory $corporaDirectory, Filesystem\File $fontFile )
 	{
 		$this->historyFile = $historyFile;
 		$this->history = History::createFromJSONEncodedFile( $historyFile );
 
 		$this->corporaDirectory = $corporaDirectory;
+
+		$this->fontFile = $fontFile;
 
 		$this->namePatternCorpus = new Corpus( 'name_pattern', ['%F %L', '%F', '%F '] );
 		$this->prefixPatternCorpus = new Corpus( 'prefix_pattern', ['%P'] );
@@ -192,6 +199,16 @@ class Engine
 
 		$corpus = Corpus::createFromJSONEncodedFile( $corpusFile, $domain );
 		return $corpus;
+	}
+
+	/**
+	 * Returns font File object
+	 *
+	 * @return	Cranberry\Filesystem\File
+	 */
+	public function getFontFile() : Filesystem\File
+	{
+		return $this->fontFile;
 	}
 
 	/**

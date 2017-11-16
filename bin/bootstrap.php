@@ -39,6 +39,10 @@ $___bootstrap = function( Shell\Application &$app )
 		{
 			throw new \RuntimeException( sprintf( Application::ERROR_STRING_ENV, 'ZTB_CORPORA' ) );
 		}
+		if( !$input->hasEnv( 'ZTB_FONT' ) )
+		{
+			throw new \RuntimeException( sprintf( Application::ERROR_STRING_ENV, 'ZTB_FONT' ) );
+		}
 
 		/* Corpora */
 		$corporaPathname = $input->getEnv( 'ZTB_CORPORA' );
@@ -65,6 +69,14 @@ $___bootstrap = function( Shell\Application &$app )
 		if( !$historyFile->exists() )
 		{
 			$historyFile->putContents( '[]' );
+		}
+
+		/* Font */
+		$fontPathname = $input->getEnv( 'ZTB_FONT' );
+		$fontFile = new Filesystem\File( $fontPathname, Filesystem\Node::FILE );
+		if( !$fontFile->exists() )
+		{
+			throw new \RuntimeException( sprintf( "Invalid font file: '%s' not found", $fontFile->getPathname() ) );
 		}
 
 		/* Engine */

@@ -10,6 +10,36 @@ use PHPUnit\Framework\TestCase;
 class EngineTest extends TestCase
 {
 	/**
+	 * Returns a generic Directory mock
+	 *
+	 * @return	\Cranberry\Filesystem\Directory
+	 */
+	public function getDirectoryMock() : \Cranberry\Filesystem\Directory
+	{
+		$directoryMock = $this
+			->getMockBuilder( \Cranberry\Filesystem\Directory::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		return $directoryMock;
+	}
+
+	/**
+	 * Returns a generic File mock
+	 *
+	 * @return	\Cranberry\Filesystem\File
+	 */
+	public function getFileMock() : \Cranberry\Filesystem\File
+	{
+		$fileMock = $this
+			->getMockBuilder( \Cranberry\Filesystem\File::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		return $fileMock;
+	}
+
+	/**
 	 * Returns mock of file containing JSON-encoded History data
 	 *
 	 * @return	\Cranberry\Filesystem\File
@@ -139,7 +169,9 @@ class EngineTest extends TestCase
 			->willReturn( $categoryDirectoryStub );
 
 		$historyFileMock = $this->getHistoryFileMock();
-		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$fontFileMock = $this->getFileMock();
+
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub, $fontFileMock );
 
 		$corpus = $engine->getCorpus( 'foods', 'condiments', $domainParam );
 
@@ -181,8 +213,21 @@ class EngineTest extends TestCase
 			->willReturn( $categoryDirectoryStub );
 
 		$historyFileMock = $this->getHistoryFileMock();
-		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$fontFileMock = $this->getFileMock();
+
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub, $fontFileMock );
 		$engine->getCorpus( 'foo', 'bar' );
+	}
+
+	public function test_getFontFile()
+	{
+		$historyFileMock = $this->getHistoryFileMock();
+		$corporaDirectoryMock = $this->getDirectoryMock();
+		$fontFileMock = $this->getFileMock();
+
+		$engine = new Engine( $historyFileMock, $corporaDirectoryMock, $fontFileMock );
+
+		$this->assertEquals( $fontFileMock, $engine->getFontFile() );
 	}
 
 	public function test_getPerformerName()
@@ -199,7 +244,9 @@ class EngineTest extends TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$fontFileMock = $this->getFileMock();
+
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub, $fontFileMock );
 
 		$engine->registerFirstNameCorpus( new Corpus( 'fruits', ['blueberry'] ) );
 		$engine->registerLastNameCorpus( new Corpus( 'cities', ['Avondale'] ) );
@@ -335,7 +382,9 @@ class EngineTest extends TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$fontFileMock = $this->getFileMock();
+
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub, $fontFileMock );
 
 		$engine->registerCharacterNameCorpus( new Corpus( 'foobar', ['foo', 'bar-baz'] ) );
 		$engine->registerOccupationsCorpus( new Corpus( 'colors', ['red orange yellow', 'green', 'blue-indigo violet'] ) );
@@ -458,7 +507,9 @@ class EngineTest extends TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$fontFileMock = $this->getFileMock();
+
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub, $fontFileMock );
 		$corpus = new Corpus( 'firstNames', ['Foo', 'Bar Baz'] );
 
 		$engine->registerCharacterNameCorpus( $corpus );
@@ -479,7 +530,8 @@ class EngineTest extends TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$fontFileMock = $this->getFileMock();
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub, $fontFileMock );
 
 		$corpus = new Corpus( 'fruits', ['blueberry'] );
 		$engine->registerFirstNameCorpus( $corpus );
@@ -495,7 +547,8 @@ class EngineTest extends TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$fontFileMock = $this->getFileMock();
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub, $fontFileMock );
 		$corpus = new Corpus( 'hyphen', ['Cinderford','Bradford-On-Avon'] );
 
 		$engine->registerFirstNameCorpus( $corpus );
@@ -516,7 +569,8 @@ class EngineTest extends TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$fontFileMock = $this->getFileMock();
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub, $fontFileMock );
 		$corpus = new Corpus( 'first_names', ['Pepsi','Snoopy','Max'] );
 
 		$engine->registerFirstNameCorpus( $corpus );
@@ -539,7 +593,8 @@ class EngineTest extends TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$fontFileMock = $this->getFileMock();
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub, $fontFileMock );
 
 		$corpus = new Corpus( 'honorifics', ['Admiral'] );
 		$engine->registerHonorificsCorpus( $corpus );
@@ -555,7 +610,8 @@ class EngineTest extends TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$fontFileMock = $this->getFileMock();
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub, $fontFileMock );
 		$corpus = new Corpus( 'hyphen', ['Dr.','Vice Chancellor'] );
 
 		$engine->registerHonorificsCorpus( $corpus );
@@ -576,7 +632,8 @@ class EngineTest extends TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$fontFileMock = $this->getFileMock();
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub, $fontFileMock );
 
 		$corpus = new Corpus( 'condiments', ['mayonnaise'] );
 		$engine->registerLastNameCorpus( $corpus );
@@ -592,7 +649,8 @@ class EngineTest extends TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$fontFileMock = $this->getFileMock();
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub, $fontFileMock );
 		$corpus = new Corpus( 'hyphen', ['Cinderford','Bradford-On-Avon'] );
 
 		$engine->registerLastNameCorpus( $corpus );
@@ -613,7 +671,8 @@ class EngineTest extends TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$fontFileMock = $this->getFileMock();
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub, $fontFileMock );
 
 		$corpus = new Corpus( 'colors', ['violet'] );
 		$engine->registerOccupationsCorpus( $corpus );
@@ -629,7 +688,8 @@ class EngineTest extends TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$fontFileMock = $this->getFileMock();
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub, $fontFileMock );
 		$corpus = new Corpus( 'colors', ['violet','red orange yellow green blue indigo'] );
 
 		$engine->registerOccupationsCorpus( $corpus );
@@ -650,7 +710,9 @@ class EngineTest extends TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$fontFileMock = $this->getFileMock();
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub, $fontFileMock );
+
 		$corpus = new Corpus( 'colors', ['violet','red orange yellow green blue indigo'] );
 
 		$engine->registerPerformerPrefixCorpus( $corpus );
@@ -677,7 +739,9 @@ class EngineTest extends TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$engine = new Engine( $historyFileMock, $corporaDirectoryStub );
+		$fontFileMock = $this->getFileMock();
+		$engine = new Engine( $historyFileMock, $corporaDirectoryStub, $fontFileMock );
+
 		$engine->writeHistory();
 	}
 }
