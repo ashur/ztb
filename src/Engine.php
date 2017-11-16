@@ -167,46 +167,6 @@ class Engine
 	}
 
 	/**
-	 * Returns a character name
-	 *
-	 * @return	string
-	 */
-	public function getRole() : string
-	{
-		$rolePattern = $this->getRandomValueFromCorpus( $this->rolePatternCorpus, $this->history );
-		$this->history->addDomainItem( $this->rolePatternCorpus->getName(), $rolePattern );
-
-		/* Occupation */
-		if( substr_count( $rolePattern, '%O' ) )
-		{
-			$occupation = $this->getRandomOccupation();
-			$occupation = ucwords( $occupation, " \t\r\n\f\v-" );
-
-			$rolePattern = str_replace( '%O', $occupation, $rolePattern );
-		}
-		/* Character Name */
-		if( substr_count( $rolePattern, '%C' ) )
-		{
-			$occupation = $this->getRandomCharacterName();
-			$occupation = ucwords( $occupation, " \t\r\n\f\v-" );
-
-			$rolePattern = str_replace( '%C', $occupation, $rolePattern );
-		}
-		/* Number */
-		if( substr_count( $rolePattern, '%n' ) )
-		{
-			$roleNumber = $this->getRandomValueFromCorpus( new Corpus( 'role_number', [1,2,3] ), $this->history );
-			$this->history->addDomainItem( 'role_number', $roleNumber );
-
-			$rolePattern = str_replace( '%n', $roleNumber, $rolePattern );
-		}
-
-		$rolePattern = trim( $rolePattern );
-
-		return $rolePattern;
-	}
-
-	/**
 	 * Returns Corpus object instantiated from JSON-encoded data file
 	 *
 	 * @param	string	$category
@@ -473,6 +433,46 @@ class Engine
 		$history->addDomainItem( $randomCorpus->getName(), $randomValue );
 
 		return $randomValue;
+	}
+
+	/**
+	 * Returns a character name
+	 *
+	 * @return	string
+	 */
+	public function getRole() : string
+	{
+		$rolePattern = $this->getRandomValueFromCorpus( $this->rolePatternCorpus, $this->history );
+		$this->history->addDomainItem( $this->rolePatternCorpus->getName(), $rolePattern );
+
+		/* Occupation */
+		if( substr_count( $rolePattern, '%O' ) )
+		{
+			$occupation = $this->getRandomOccupation();
+			$occupation = ucwords( $occupation, " \t\r\n\f\v-" );
+
+			$rolePattern = str_replace( '%O', $occupation, $rolePattern );
+		}
+		/* Character Name */
+		if( substr_count( $rolePattern, '%C' ) )
+		{
+			$occupation = $this->getRandomCharacterName();
+			$occupation = ucwords( $occupation, " \t\r\n\f\v-" );
+
+			$rolePattern = str_replace( '%C', $occupation, $rolePattern );
+		}
+		/* Number */
+		if( substr_count( $rolePattern, '%n' ) )
+		{
+			$roleNumber = $this->getRandomValueFromCorpus( new Corpus( 'role_number', [1,2,3] ), $this->history );
+			$this->history->addDomainItem( 'role_number', $roleNumber );
+
+			$rolePattern = str_replace( '%n', $roleNumber, $rolePattern );
+		}
+
+		$rolePattern = trim( $rolePattern );
+
+		return $rolePattern;
 	}
 
 	/**
