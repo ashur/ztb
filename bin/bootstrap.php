@@ -80,7 +80,7 @@ $___bootstrap = function( Shell\Application &$app )
 		}
 
 		/* Engine */
-		$engine = new Engine( $historyFile, $corporaDirectory );
+		$engine = new Engine( $historyFile, $corporaDirectory, $fontFile );
 		$this->registerMiddlewareParameter( $engine );
 
 		return Middleware\Middleware::CONTINUE;
